@@ -18,6 +18,9 @@ public class ClientThread extends Thread {
         this.freq = freq;
     }
 
+    /**
+     * teste de javadoc
+     */
     public void run ( ) {
         //try {
         int i = 0;
