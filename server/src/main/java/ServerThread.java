@@ -20,6 +20,9 @@ public class ServerThread extends Thread {
         }
     }
 
+    /**
+     * Explicar Java Doc
+     */
     public void run ( ) {
 
         while ( true ) {
