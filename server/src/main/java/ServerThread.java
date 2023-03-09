@@ -31,13 +31,9 @@ public class ServerThread extends Thread {
      * Explicar Java Doc
      */
     public void run ( ) {
-
-        while ( true ) {
-            try {
-                System.out.println ( "Accepting Data" );
-                acceptClient();
-
-
+        try {
+            System.out.println ( "Accepting Data" );
+            acceptClient();
                 /*
                 in = new DataInputStream ( socket.getInputStream ( ) );
                 out = new PrintWriter ( socket.getOutputStream ( ) , true );
@@ -45,9 +41,8 @@ public class ServerThread extends Thread {
                 System.out.println ( "***** " + message + " *****" );
                 out.println ( message.toUpperCase ( ) );
                 */
-            } catch ( IOException e ) {
-                throw new RuntimeException();
-            }
+        } catch ( IOException e ) {
+            throw new RuntimeException();
         }
 
     }
