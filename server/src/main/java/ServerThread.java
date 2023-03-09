@@ -6,6 +6,9 @@ import java.net.Socket;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 public class ServerThread extends Thread {
     private final int port;
@@ -15,6 +18,8 @@ public class ServerThread extends Thread {
     private Socket socket;
 
     private final ExecutorService executor;
+
+    private static final Logger logger = Logger.getLogger(ServerThread.class.getName());
 
 
     public ServerThread ( int port ) {
@@ -32,6 +37,7 @@ public class ServerThread extends Thread {
      */
     public void run ( ) {
         try {
+            logger.info("Server started");
             System.out.println ( "Accepting Data" );
             acceptClient();
                 /*
@@ -48,12 +54,17 @@ public class ServerThread extends Thread {
     }
 
     private void acceptClient() throws IOException {
-
+        FileHandler fh;
+        fh = new FileHandler("server.log");
+        logger.addHandler(fh);
+        SimpleFormatter formatter = new SimpleFormatter();
+        fh.setFormatter(formatter);
         Thread t = new Thread(() -> {
             while( true ){
                 try {
                     socket = server.accept ( );
-                    ClientWorker clientWorker = new ClientWorker(socket);     //Estou a criar
+                    logger.info("Accepted connection from client "+ socket.getRemoteSocketAddress());
+                    ClientWorker clientWorker = new ClientWorker(socket, logger);     //Estou a criar
                     executor.submit(clientWorker);
                 } catch(IOException e){
                     throw new RuntimeException();
