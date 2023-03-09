@@ -28,7 +28,7 @@ public class ClientThread extends Thread {
                 socket = new Socket ( "localhost" , port );
                 out = new DataOutputStream ( socket.getOutputStream ( ) );
                 in = new BufferedReader ( new InputStreamReader ( socket.getInputStream ( ) ) );
-                out.writeUTF ( "My message number " + i + " to the server " + "I'm " + id );
+                out.writeUTF ( "My message number " + i + " to the server testest " + "I'm " + id );
                 String response;
                 response = in.readLine ( );
                 System.out.println ( "From Server " + response );
