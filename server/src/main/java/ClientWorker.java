@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
@@ -26,7 +27,7 @@ public class ClientWorker implements Runnable{
     private AtomicInteger nClients;
 
     private Queue <Client> queueReplies;
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     public ClientWorker (Socket request, Logger logger) {
 
@@ -43,16 +44,22 @@ public class ClientWorker implements Runnable{
 
     @Override
     public void run() {
+        try {
+        LocalDateTime loginTime = LocalDateTime.now();
+        logger.info(loginTime.format(formatter)+"- Action : CONNECTED ClientX");
         while ( true ) {
-            try {
-
                 String message = in.readUTF ( );
+                if ( message == null) break;
                 System.out.println ( "***** " + message + " *****" );
-                out.println ( message.toUpperCase ( ) );
-
-            } catch ( IOException e ) {
-                throw new RuntimeException();
-            }
+                LocalDateTime messageTime = LocalDateTime.now();
+                logger.info(messageTime.format(formatter)+"- Action : Message - ClientX -  "+message);
+                out.println ( "Message received" );
+        }
+        LocalDateTime logoutTime = LocalDateTime.now();
+        logger.info(logoutTime.format(formatter)+"- Action : DISCONNECTED ClientX");
+        } catch ( IOException e ) {
+            throw new RuntimeException();
         }
     }
+
 }

@@ -40,13 +40,6 @@ public class ServerThread extends Thread {
             logger.info("Server started");
             System.out.println ( "Accepting Data" );
             acceptClient();
-                /*
-                in = new DataInputStream ( socket.getInputStream ( ) );
-                out = new PrintWriter ( socket.getOutputStream ( ) , true );
-                String message = in.readUTF ( );
-                System.out.println ( "***** " + message + " *****" );
-                out.println ( message.toUpperCase ( ) );
-                */
         } catch ( IOException e ) {
             throw new RuntimeException();
         }
@@ -63,7 +56,6 @@ public class ServerThread extends Thread {
             while( true ){
                 try {
                     socket = server.accept ( );
-                    logger.info("Accepted connection from client "+ socket.getRemoteSocketAddress());
                     ClientWorker clientWorker = new ClientWorker(socket, logger);     //Estou a criar
                     executor.submit(clientWorker);
                 } catch(IOException e){
