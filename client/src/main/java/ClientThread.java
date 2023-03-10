@@ -31,7 +31,7 @@ public class ClientThread extends Thread {
                 out.writeUTF ( "My message number " + i + " to the server testest " + "I'm " + id );
                 String response;
                 response = in.readLine ( );
-                System.out.println ( "From Server " + response );
+                System.out.println ( "From Server: " + response );
                 out.flush ( );
                 socket.close ( );
                 sleep ( freq );

@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class ClientWorker implements Runnable{
 
@@ -32,58 +31,25 @@ public class ClientWorker implements Runnable{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
 
+    }
 
     @Override
     public void run() {
         while ( true ) {
             try {
-
                 String message = in.readUTF ( );
+                Filter f= new Filter(message);
+                f.start();
+                f.join();
+                String filteredMessage =f.getMessage();
                 System.out.println ( "***** " + message + " *****" );
-                bannedWordsFile("bannedWords.txt");
-                if(Filter(message)){
-                    out.println("One of your following messages was removed for being inappropriate");
-                }
-                else{
-                    out.println ( message.toUpperCase ( ) );
-                }
+                out.println(filteredMessage);
 
-            } catch ( IOException e ) {
+            } catch ( IOException | InterruptedException e ) {
                 throw new RuntimeException();
             }
         }
     }
 
-    private boolean Filter(String message) throws IOException {
-
-        String[] wordSplitter= message.split(" ");
-
-        for(String word:wordSplitter){
-            if(bannedWords.contains(word.toLowerCase())){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static List<String> bannedWordsFile(String fileName) throws IOException{
-        //List of banned words
-        Path filePath= Paths.get(fileName);
-
-        BufferedReader bannedWordsFile=new BufferedReader(new FileReader(filePath.toFile()));
-
-        String lineFile;
-
-        while((lineFile=bannedWordsFile.readLine())!=null){
-
-            String[] lineWordsFile = lineFile.split(" ");
-
-            Collections.addAll(bannedWords, lineWordsFile);
-
-        }
-        bannedWordsFile.close();
-        return bannedWords;
-    }
 }
