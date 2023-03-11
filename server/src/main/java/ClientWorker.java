@@ -51,8 +51,7 @@ public class ClientWorker implements Runnable{
 
     @Override
     public void run() {
-        try {
-        
+
         log( "CONNECTED Client "+id);
 
         while ( true ) {
@@ -67,17 +66,14 @@ public class ClientWorker implements Runnable{
                 out.println(filteredMessage);
                 log("Message - Client "+id +" -  "+message);
                 out.println ( "Message received" );
-                
+
                } catch ( IOException | InterruptedException e ) {
                 throw new RuntimeException();
             }
         }
-        
+
         log("DISCONNECTED Client "+id);
 
-        } catch ( IOException e ) {
-            throw new RuntimeException();
-        }
     }
 
     public void log ( String message){
