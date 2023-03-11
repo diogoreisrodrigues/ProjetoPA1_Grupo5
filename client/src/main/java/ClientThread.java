@@ -42,6 +42,7 @@ public class ClientThread extends Thread {
                     i++;
                 }
                 socket.close();
+                
             } catch ( IOException | InterruptedException e ) {
                 e.printStackTrace ( );
             }

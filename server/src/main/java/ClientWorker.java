@@ -1,7 +1,8 @@
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -10,6 +11,7 @@ import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.*;
+
 
 public class ClientWorker implements Runnable{
 
@@ -23,6 +25,8 @@ public class ClientWorker implements Runnable{
     private final Logger logger;
 
     private byte[] result;
+
+    private static final List<String> bannedWords= new ArrayList<>();
 
     private AtomicInteger nClients;
 
@@ -42,8 +46,8 @@ public class ClientWorker implements Runnable{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
 
+    }
 
     @Override
     public void run() {
@@ -52,12 +56,21 @@ public class ClientWorker implements Runnable{
         log( "CONNECTED Client "+id);
 
         while ( true ) {
+          try {
                 String message = in.readUTF ( );
                 if ( message == null) break;
+                Filter f= new Filter(message);
+                f.start();
+                f.join();
+                String filteredMessage =f.getMessage();
                 System.out.println ( "***** " + message + " *****" );
-                
+                out.println(filteredMessage);
                 log("Message - Client "+id +" -  "+message);
                 out.println ( "Message received" );
+                
+               } catch ( IOException | InterruptedException e ) {
+                throw new RuntimeException();
+            }
         }
         
         log("DISCONNECTED Client "+id);
