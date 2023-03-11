@@ -6,6 +6,10 @@ import java.net.Socket;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 public class ServerThread extends Thread {
     private final int port;
@@ -16,10 +20,15 @@ public class ServerThread extends Thread {
 
     private final ExecutorService executor;
 
+    private static final Logger logger = Logger.getLogger(ServerThread.class.getName());
+
+    private AtomicInteger counterId;
+
 
     public ServerThread ( int port ) {
         this.port = port;
-        this.executor = Executors.newFixedThreadPool(9);         //Por agora nthread ta um numero fixo mas depois corrigir para ficar dinâmico
+        this.executor = Executors.newFixedThreadPool(4);         //Por agora nthread ta um numero fixo mas depois corrigir para ficar dinâmico
+        this.counterId = new AtomicInteger(0);
         try {
             server = new ServerSocket ( this.port );
         } catch ( IOException e ) {
@@ -32,15 +41,9 @@ public class ServerThread extends Thread {
      */
     public void run ( ) {
         try {
+            logger.info("Server started");
             System.out.println ( "Accepting Data" );
             acceptClient();
-                /*
-                in = new DataInputStream ( socket.getInputStream ( ) );
-                out = new PrintWriter ( socket.getOutputStream ( ) , true );
-                String message = in.readUTF ( );
-                System.out.println ( "***** " + message + " *****" );
-                out.println ( message.toUpperCase ( ) );
-                */
         } catch ( IOException e ) {
             throw new RuntimeException();
         }
@@ -48,12 +51,17 @@ public class ServerThread extends Thread {
     }
 
     private void acceptClient() throws IOException {
-
+        FileHandler fh;
+        fh = new FileHandler("server.log");
+        logger.addHandler(fh);
+        SimpleFormatter formatter = new SimpleFormatter();
+        fh.setFormatter(formatter);
         Thread t = new Thread(() -> {
             while( true ){
                 try {
                     socket = server.accept ( );
-                    ClientWorker clientWorker = new ClientWorker(socket);     //Estou a criar
+                    int id = counterId.incrementAndGet();
+                    ClientWorker clientWorker = new ClientWorker(socket, logger, id);     //Estou a criar
                     executor.submit(clientWorker);
                 } catch(IOException e){
                     throw new RuntimeException();
