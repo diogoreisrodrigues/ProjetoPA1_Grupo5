@@ -29,13 +29,16 @@ public class ClientWorker implements Runnable{
     private Queue <Client> queueReplies;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
-    public ClientWorker (Socket request, Logger logger) {
+    private final int id;
+
+    public ClientWorker (Socket request, Logger logger, int id) {
 
         try {
             this.request = request;
             this.in = new DataInputStream( request.getInputStream ( ) );
             this.out = new PrintWriter( request.getOutputStream ( ) , true );
             this.logger = logger;
+            this.id = id;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -45,16 +48,20 @@ public class ClientWorker implements Runnable{
     @Override
     public void run() {
         try {
-        log("CONNECTED ClientX");
+        
+        log( "CONNECTED Client "+id);
+
         while ( true ) {
                 String message = in.readUTF ( );
                 if ( message == null) break;
                 System.out.println ( "***** " + message + " *****" );
-                log("Message - ClientX -  " + message);
+                
+                log("Message - Client "+id +" -  "+message);
                 out.println ( "Message received" );
         }
-        LocalDateTime logoutTime = LocalDateTime.now();
-        log("DISCONNECTED ClientX");
+        
+        log("DISCONNECTED Client "+id);
+
         } catch ( IOException e ) {
             throw new RuntimeException();
         }

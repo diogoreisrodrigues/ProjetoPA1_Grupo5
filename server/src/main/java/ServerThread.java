@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -21,10 +22,13 @@ public class ServerThread extends Thread {
 
     private static final Logger logger = Logger.getLogger(ServerThread.class.getName());
 
+    private AtomicInteger counterId;
+
 
     public ServerThread ( int port ) {
         this.port = port;
-        this.executor = Executors.newFixedThreadPool(9);         //Por agora nthread ta um numero fixo mas depois corrigir para ficar dinâmico
+        this.executor = Executors.newFixedThreadPool(4);         //Por agora nthread ta um numero fixo mas depois corrigir para ficar dinâmico
+        this.counterId = new AtomicInteger(0);
         try {
             server = new ServerSocket ( this.port );
         } catch ( IOException e ) {
@@ -56,7 +60,8 @@ public class ServerThread extends Thread {
             while( true ){
                 try {
                     socket = server.accept ( );
-                    ClientWorker clientWorker = new ClientWorker(socket, logger);     //Estou a criar
+                    int id = counterId.incrementAndGet();
+                    ClientWorker clientWorker = new ClientWorker(socket, logger, id);     //Estou a criar
                     executor.submit(clientWorker);
                 } catch(IOException e){
                     throw new RuntimeException();
