@@ -45,21 +45,26 @@ public class ClientWorker implements Runnable{
     @Override
     public void run() {
         try {
-        LocalDateTime loginTime = LocalDateTime.now();
-        logger.info(loginTime.format(formatter)+"- Action : CONNECTED ClientX");
+        log("CONNECTED ClientX");
         while ( true ) {
                 String message = in.readUTF ( );
                 if ( message == null) break;
                 System.out.println ( "***** " + message + " *****" );
-                LocalDateTime messageTime = LocalDateTime.now();
-                logger.info(messageTime.format(formatter)+"- Action : Message - ClientX -  "+message);
+                log("Message - ClientX -  " + message);
                 out.println ( "Message received" );
         }
         LocalDateTime logoutTime = LocalDateTime.now();
-        logger.info(logoutTime.format(formatter)+"- Action : DISCONNECTED ClientX");
+        log("DISCONNECTED ClientX");
         } catch ( IOException e ) {
             throw new RuntimeException();
         }
+    }
+
+    public void log ( String message){
+        //lock
+        LocalDateTime timeOfAction = LocalDateTime.now();
+        logger.info(timeOfAction.format(formatter)+"- Action : "+ message);
+        //unlock
     }
 
 }

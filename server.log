@@ -1,152 +1,232 @@
-mar. 09, 2023 10:48:16 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55279
-mar. 09, 2023 10:48:16 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55280
-mar. 09, 2023 10:48:16 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55281
-mar. 09, 2023 10:48:16 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55282
-mar. 09, 2023 10:48:18 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55284
-mar. 09, 2023 10:48:18 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55285
-mar. 09, 2023 10:48:19 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55286
-mar. 09, 2023 10:48:19 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55287
-mar. 09, 2023 10:48:19 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55288
-mar. 09, 2023 10:48:19 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55289
-mar. 09, 2023 10:48:20 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55290
-mar. 09, 2023 10:48:20 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55291
-mar. 09, 2023 10:48:21 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55295
-mar. 09, 2023 10:48:21 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55296
-mar. 09, 2023 10:48:21 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55298
-mar. 09, 2023 10:48:21 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55297
-mar. 09, 2023 10:48:22 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55300
-mar. 09, 2023 10:48:22 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55299
-mar. 09, 2023 10:48:23 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55301
-mar. 09, 2023 10:48:23 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55302
-mar. 09, 2023 10:48:23 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55303
-mar. 09, 2023 10:48:23 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55304
-mar. 09, 2023 10:48:24 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55306
-mar. 09, 2023 10:48:24 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55305
-mar. 09, 2023 10:48:25 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55307
-mar. 09, 2023 10:48:25 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55308
-mar. 09, 2023 10:48:25 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55310
-mar. 09, 2023 10:48:25 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55309
-mar. 09, 2023 10:48:26 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55311
-mar. 09, 2023 10:48:26 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55312
-mar. 09, 2023 10:48:27 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55313
-mar. 09, 2023 10:48:27 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55314
-mar. 09, 2023 10:48:27 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55315
-mar. 09, 2023 10:48:27 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55316
-mar. 09, 2023 10:48:28 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55317
-mar. 09, 2023 10:48:28 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55318
-mar. 09, 2023 10:48:29 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55320
-mar. 09, 2023 10:48:29 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55319
-mar. 09, 2023 10:48:29 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55321
-mar. 09, 2023 10:48:29 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55322
-mar. 09, 2023 10:48:30 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55323
-mar. 09, 2023 10:48:30 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55324
-mar. 09, 2023 10:48:31 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55326
-mar. 09, 2023 10:48:31 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55325
-mar. 09, 2023 10:48:31 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55328
-mar. 09, 2023 10:48:31 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55327
-mar. 09, 2023 10:48:32 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55329
-mar. 09, 2023 10:48:32 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55330
-mar. 09, 2023 10:48:33 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55331
-mar. 09, 2023 10:48:33 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55332
-mar. 09, 2023 10:48:33 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55333
-mar. 09, 2023 10:48:33 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55334
-mar. 09, 2023 10:48:34 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55335
-mar. 09, 2023 10:48:34 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55336
-mar. 09, 2023 10:48:35 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55337
-mar. 09, 2023 10:48:35 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55338
-mar. 09, 2023 10:48:35 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55339
-mar. 09, 2023 10:48:35 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55340
-mar. 09, 2023 10:48:36 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55341
-mar. 09, 2023 10:48:36 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55342
-mar. 09, 2023 10:48:37 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55343
-mar. 09, 2023 10:48:37 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55344
-mar. 09, 2023 10:48:37 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55345
-mar. 09, 2023 10:48:37 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55346
-mar. 09, 2023 10:48:38 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55347
-mar. 09, 2023 10:48:38 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55348
-mar. 09, 2023 10:48:39 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55349
-mar. 09, 2023 10:48:39 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55350
-mar. 09, 2023 10:48:39 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55352
-mar. 09, 2023 10:48:39 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55351
-mar. 09, 2023 10:48:40 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55354
-mar. 09, 2023 10:48:40 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55353
-mar. 09, 2023 10:48:41 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55355
-mar. 09, 2023 10:48:41 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55356
-mar. 09, 2023 10:48:41 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55357
-mar. 09, 2023 10:48:41 DA TARDE ServerThread lambda$acceptClient$0
-INFO: Accepted connection from client /127.0.0.1:55358
+mar. 10, 2023 11:57:15 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:15.282- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:15 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:15.282- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:15 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:15.282- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:15 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:15.282- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:15 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:15.290- Action : Message - ClientX -  My message number 0 to the server testest I'm 4
+mar. 10, 2023 11:57:15 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:15.290- Action : Message - ClientX -  My message number 0 to the server testest I'm 2
+mar. 10, 2023 11:57:15 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:15.290- Action : Message - ClientX -  My message number 0 to the server testest I'm 3
+mar. 10, 2023 11:57:15 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:15.290- Action : Message - ClientX -  My message number 0 to the server testest I'm 1
+mar. 10, 2023 11:57:16 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:16.296- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:16 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:16.296- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:16 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:16.297- Action : Message - ClientX -  My message number 1 to the server testest I'm 4
+mar. 10, 2023 11:57:16 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:16.297- Action : Message - ClientX -  My message number 1 to the server testest I'm 2
+mar. 10, 2023 11:57:17 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:17.297- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:17 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:17.297- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:17 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:17.298- Action : Message - ClientX -  My message number 1 to the server testest I'm 1
+mar. 10, 2023 11:57:17 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:17.298- Action : Message - ClientX -  My message number 1 to the server testest I'm 3
+mar. 10, 2023 11:57:17 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:17.309- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:17 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:17.309- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:17 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:17.310- Action : Message - ClientX -  My message number 2 to the server testest I'm 4
+mar. 10, 2023 11:57:17 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:17.311- Action : Message - ClientX -  My message number 2 to the server testest I'm 2
+mar. 10, 2023 11:57:18 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:18.319- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:18 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:18.319- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:18 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:18.320- Action : Message - ClientX -  My message number 3 to the server testest I'm 4
+mar. 10, 2023 11:57:18 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:18.321- Action : Message - ClientX -  My message number 3 to the server testest I'm 2
+mar. 10, 2023 11:57:19 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:19.303- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:19 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:19.303- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:19 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:19.304- Action : Message - ClientX -  My message number 2 to the server testest I'm 1
+mar. 10, 2023 11:57:19 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:19.305- Action : Message - ClientX -  My message number 2 to the server testest I'm 3
+mar. 10, 2023 11:57:19 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:19.334- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:19 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:19.334- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:19 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:19.335- Action : Message - ClientX -  My message number 4 to the server testest I'm 2
+mar. 10, 2023 11:57:19 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:19.335- Action : Message - ClientX -  My message number 4 to the server testest I'm 4
+mar. 10, 2023 11:57:20 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:20.347- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:20 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:20.348- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:20 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:20.348- Action : Message - ClientX -  My message number 5 to the server testest I'm 4
+mar. 10, 2023 11:57:20 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:20.349- Action : Message - ClientX -  My message number 5 to the server testest I'm 2
+mar. 10, 2023 11:57:21 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:21.314- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:21 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:21.314- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:21 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:21.315- Action : Message - ClientX -  My message number 3 to the server testest I'm 3
+mar. 10, 2023 11:57:21 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:21.316- Action : Message - ClientX -  My message number 3 to the server testest I'm 1
+mar. 10, 2023 11:57:21 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:21.361- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:21 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:21.361- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:21 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:21.362- Action : Message - ClientX -  My message number 6 to the server testest I'm 4
+mar. 10, 2023 11:57:21 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:21.363- Action : Message - ClientX -  My message number 6 to the server testest I'm 2
+mar. 10, 2023 11:57:22 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:22.375- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:22 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:22.375- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:22 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:22.376- Action : Message - ClientX -  My message number 7 to the server testest I'm 4
+mar. 10, 2023 11:57:22 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:22.376- Action : Message - ClientX -  My message number 7 to the server testest I'm 2
+mar. 10, 2023 11:57:23 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:23.324- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:23 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:23.325- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:23 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:23.325- Action : Message - ClientX -  My message number 4 to the server testest I'm 1
+mar. 10, 2023 11:57:23 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:23.326- Action : Message - ClientX -  My message number 4 to the server testest I'm 3
+mar. 10, 2023 11:57:23 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:23.387- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:23 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:23.387- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:23 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:23.388- Action : Message - ClientX -  My message number 8 to the server testest I'm 4
+mar. 10, 2023 11:57:23 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:23.388- Action : Message - ClientX -  My message number 8 to the server testest I'm 2
+mar. 10, 2023 11:57:24 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:24.398- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:24 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:24.398- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:24 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:24.399- Action : Message - ClientX -  My message number 9 to the server testest I'm 4
+mar. 10, 2023 11:57:24 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:24.399- Action : Message - ClientX -  My message number 9 to the server testest I'm 2
+mar. 10, 2023 11:57:25 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:25.333- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:25 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:25.333- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:25 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:25.333- Action : Message - ClientX -  My message number 5 to the server testest I'm 3
+mar. 10, 2023 11:57:25 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:25.334- Action : Message - ClientX -  My message number 5 to the server testest I'm 1
+mar. 10, 2023 11:57:25 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:25.408- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:25 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:25.408- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:25 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:25.409- Action : Message - ClientX -  My message number 10 to the server testest I'm 2
+mar. 10, 2023 11:57:25 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:25.409- Action : Message - ClientX -  My message number 10 to the server testest I'm 4
+mar. 10, 2023 11:57:26 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:26.423- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:26 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:26.423- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:26 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:26.424- Action : Message - ClientX -  My message number 11 to the server testest I'm 4
+mar. 10, 2023 11:57:26 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:26.424- Action : Message - ClientX -  My message number 11 to the server testest I'm 2
+mar. 10, 2023 11:57:27 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:27.344- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:27 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:27.344- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:27 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:27.344- Action : Message - ClientX -  My message number 6 to the server testest I'm 1
+mar. 10, 2023 11:57:27 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:27.345- Action : Message - ClientX -  My message number 6 to the server testest I'm 3
+mar. 10, 2023 11:57:27 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:27.435- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:27 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:27.436- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:27 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:27.436- Action : Message - ClientX -  My message number 12 to the server testest I'm 2
+mar. 10, 2023 11:57:27 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:27.436- Action : Message - ClientX -  My message number 12 to the server testest I'm 4
+mar. 10, 2023 11:57:28 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:28.450- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:28 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:28.451- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:28 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:28.451- Action : Message - ClientX -  My message number 13 to the server testest I'm 4
+mar. 10, 2023 11:57:28 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:28.452- Action : Message - ClientX -  My message number 13 to the server testest I'm 2
+mar. 10, 2023 11:57:29 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:29.353- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:29 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:29.352- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:29 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:29.353- Action : Message - ClientX -  My message number 7 to the server testest I'm 3
+mar. 10, 2023 11:57:29 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:29.354- Action : Message - ClientX -  My message number 7 to the server testest I'm 1
+mar. 10, 2023 11:57:29 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:29.461- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:29 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:29.461- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:29 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:29.462- Action : Message - ClientX -  My message number 14 to the server testest I'm 2
+mar. 10, 2023 11:57:29 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:29.462- Action : Message - ClientX -  My message number 14 to the server testest I'm 4
+mar. 10, 2023 11:57:30 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:30.463- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:30 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:30.464- Action : Message - ClientX -  My message number 15 to the server testest I'm 2
+mar. 10, 2023 11:57:30 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:30.466- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:30 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:30.467- Action : Message - ClientX -  My message number 15 to the server testest I'm 4
+mar. 10, 2023 11:57:31 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:31.368- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:31 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:31.368- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:31 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:31.368- Action : Message - ClientX -  My message number 8 to the server testest I'm 3
+mar. 10, 2023 11:57:31 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:31.368- Action : Message - ClientX -  My message number 8 to the server testest I'm 1
+mar. 10, 2023 11:57:31 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:31.465- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:31 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:31.466- Action : Message - ClientX -  My message number 16 to the server testest I'm 2
+mar. 10, 2023 11:57:31 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:31.476- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:31 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:31.477- Action : Message - ClientX -  My message number 16 to the server testest I'm 4
+mar. 10, 2023 11:57:32 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:32.475- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:32 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:32.476- Action : Message - ClientX -  My message number 17 to the server testest I'm 2
+mar. 10, 2023 11:57:32 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:32.491- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:32 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:32.492- Action : Message - ClientX -  My message number 17 to the server testest I'm 4
+mar. 10, 2023 11:57:33 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:33.374- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:33 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:33.375- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:33 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:33.375- Action : Message - ClientX -  My message number 9 to the server testest I'm 3
+mar. 10, 2023 11:57:33 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:33.375- Action : Message - ClientX -  My message number 9 to the server testest I'm 1
+mar. 10, 2023 11:57:33 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:33.484- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:33 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:33.485- Action : Message - ClientX -  My message number 18 to the server testest I'm 2
+mar. 10, 2023 11:57:33 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:33.500- Action : CONNECTED ClientX
+mar. 10, 2023 11:57:33 DA TARDE ClientWorker log
+INFO: 2023-03-10 23:57:33.501- Action : Message - ClientX -  My message number 18 to the server testest I'm 4
