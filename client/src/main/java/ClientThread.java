@@ -20,7 +20,7 @@ public class ClientThread extends Thread {
         this.freq = freq;
 
     }
-
+    
     public void run ( ) {
         //try {
         int i = 0;
