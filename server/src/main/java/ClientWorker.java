@@ -29,13 +29,16 @@ public class ClientWorker implements Runnable{
     private Queue <Client> queueReplies;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
-    public ClientWorker (Socket request, Logger logger) {
+    private final int id;
+
+    public ClientWorker (Socket request, Logger logger, int id) {
 
         try {
             this.request = request;
             this.in = new DataInputStream( request.getInputStream ( ) );
             this.out = new PrintWriter( request.getOutputStream ( ) , true );
             this.logger = logger;
+            this.id = id;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -46,17 +49,17 @@ public class ClientWorker implements Runnable{
     public void run() {
         try {
         LocalDateTime loginTime = LocalDateTime.now();
-        logger.info(loginTime.format(formatter)+"- Action : CONNECTED ClientX");
+        logger.info(loginTime.format(formatter)+"- Action : CONNECTED Client "+id);
         while ( true ) {
                 String message = in.readUTF ( );
                 if ( message == null) break;
                 System.out.println ( "***** " + message + " *****" );
                 LocalDateTime messageTime = LocalDateTime.now();
-                logger.info(messageTime.format(formatter)+"- Action : Message - ClientX -  "+message);
+                logger.info(messageTime.format(formatter)+"- Action : Message - Client "+id +" -  "+message);
                 out.println ( "Message received" );
         }
         LocalDateTime logoutTime = LocalDateTime.now();
-        logger.info(logoutTime.format(formatter)+"- Action : DISCONNECTED ClientX");
+        logger.info(logoutTime.format(formatter)+"- Action : DISCONNECTED Client "+id);
         } catch ( IOException e ) {
             throw new RuntimeException();
         }
