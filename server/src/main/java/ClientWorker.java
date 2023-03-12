@@ -36,6 +36,7 @@ public class ClientWorker implements Runnable{
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     private final int id;
+    
     private Socket socket;
     private Semaphore semaphore;
 
@@ -51,7 +52,6 @@ public class ClientWorker implements Runnable{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
@@ -60,7 +60,7 @@ public class ClientWorker implements Runnable{
         log( "CONNECTED Client "+id);
 
         while ( true ) {
-            try {
+          try {
                 String message = in.readUTF ( );
                 if ( message == null) break;
                 Filter f= new Filter(message);
@@ -74,13 +74,13 @@ public class ClientWorker implements Runnable{
 
             } catch ( IOException | InterruptedException e ) {
                 break;
+
             }
 
         log("DISCONNECTED Client "+id);
         semaphore.release();
 
         }
-
     }
 
     public void log ( String message){
