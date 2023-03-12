@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.*;
@@ -34,19 +36,22 @@ public class ClientWorker implements Runnable{
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     private final int id;
+    
+    private Socket socket;
+    private Semaphore semaphore;
 
-    public ClientWorker (Socket request, Logger logger, int id) {
+    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore) {
 
         try {
             this.request = request;
             this.in = new DataInputStream( request.getInputStream ( ) );
             this.out = new PrintWriter( request.getOutputStream ( ) , true );
             this.logger = logger;
+            this.semaphore = semaphore;
             this.id = id;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
@@ -67,13 +72,15 @@ public class ClientWorker implements Runnable{
                 log("Message - Client "+id +" -  "+message);
                 out.println ( "Message received" );
 
-               } catch ( IOException | InterruptedException e ) {
-                throw new RuntimeException();
+            } catch ( IOException | InterruptedException e ) {
+                break;
+
             }
-        }
 
         log("DISCONNECTED Client "+id);
+        semaphore.release();
 
+        }
     }
 
     public void log ( String message){
@@ -84,3 +91,4 @@ public class ClientWorker implements Runnable{
     }
 
 }
+
