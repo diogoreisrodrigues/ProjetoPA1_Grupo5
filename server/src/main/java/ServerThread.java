@@ -3,14 +3,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-import java.util.concurrent.ThreadPoolExecutor;
 
 public class ServerThread extends Thread {
     private final int port;
@@ -20,14 +19,18 @@ public class ServerThread extends Thread {
     private Socket socket;
     private final ExecutorService executor;
     private static final Logger logger = Logger.getLogger(ServerThread.class.getName());
+    private AtomicInteger counterId;
     private int maxClients;
     private final Semaphore semaphore;
+    private final Queue<Socket> waitingClients;
 
     public ServerThread ( int port ) {
         this.port = port;
         this.maxClients = 2;
-        this.semaphore = new Semaphore( maxClients );
-        this.executor = Executors.newFixedThreadPool( maxClients );         //Por agora nthread ta um numero fixo mas depois corrigir para ficar dinâmico
+        this.executor = Executors.newFixedThreadPool(4);         //Por agora nthread ta um numero fixo mas depois corrigir para ficar dinâmico
+        this.semaphore = new Semaphore(maxClients);
+        this.counterId = new AtomicInteger(0);
+        this.waitingClients = new LinkedList<>();
         try {
             server = new ServerSocket ( this.port );
         } catch ( IOException e ) {
@@ -52,37 +55,44 @@ public class ServerThread extends Thread {
     private void acceptClient() throws IOException {
         FileHandler fh;
         fh = new FileHandler("server.log");
+        logger.addHandler(fh);
         SimpleFormatter formatter = new SimpleFormatter();
         fh.setFormatter(formatter);
-        Queue<Socket> waitingClientsList = new LinkedList<>();
         Thread t = new Thread(() -> {
-            while( true ){
+            while (true) {
                 try {
-                    semaphore.acquire( );
-                    if ( ((ThreadPoolExecutor)executor).getActiveCount() < (maxClients - 1) ){
-                        socket = server.accept ( );
-                        ClientWorker clientWorker = new ClientWorker(socket, logger);     //Estou a criar
-                        executor.submit( clientWorker );
-                    } else {
-                        waitingClientsList.offer( socket );
-                    }
-                } catch(IOException | InterruptedException e ){
-                    throw new RuntimeException();
-                } finally {
-                    semaphore.release();
-                }
-                while ( !waitingClientsList.isEmpty() ){
-                    Socket waitingSocket = waitingClientsList.peek();
-                    if (((ThreadPoolExecutor) executor).getActiveCount() < (maxClients - 1) ) {
-                        waitingClientsList.poll();
-                        ClientWorker clientWorker = new ClientWorker(waitingSocket, logger);
+                    Socket socket = server.accept();
+                    int id = counterId.incrementAndGet();
+                    if (semaphore.tryAcquire()) {
+                        ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore);
                         executor.submit(clientWorker);
                     } else {
-                        break;
+                        waitingClients.offer(socket);
                     }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
             }
         });
         t.start();
+
+        Thread t2 = new Thread(() -> {
+            while (true) {
+                try {
+                    if (semaphore.tryAcquire()) {
+                        Socket socket = waitingClients.poll();
+                        if (socket != null) {
+                            int id = counterId.incrementAndGet();
+                            ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore);
+                            executor.submit(clientWorker);
+                        }
+                    }
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        });
+        t2.start();
     }
 }
