@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -18,6 +19,7 @@ public class ServerThread extends Thread {
     private Socket socket;
 
     private final ExecutorService executor;
+    private final ReentrantLock lockLog;
 
     private static final Logger logger = Logger.getLogger(ServerThread.class.getName());
 
@@ -30,6 +32,7 @@ public class ServerThread extends Thread {
         } catch ( IOException e ) {
             e.printStackTrace ( );
         }
+        this.lockLog = new ReentrantLock();
     }
 
     /**
@@ -56,7 +59,7 @@ public class ServerThread extends Thread {
             while( true ){
                 try {
                     socket = server.accept ( );
-                    ClientWorker clientWorker = new ClientWorker(socket, logger);     //Estou a criar
+                    ClientWorker clientWorker = new ClientWorker(socket, logger,lockLog);     //Estou a criar
                     executor.submit(clientWorker);
                 } catch(IOException e){
                     throw new RuntimeException();

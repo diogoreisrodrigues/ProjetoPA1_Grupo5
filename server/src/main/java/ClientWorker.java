@@ -1,6 +1,7 @@
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.Authenticator;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -28,14 +29,16 @@ public class ClientWorker implements Runnable{
 
     private Queue <Client> queueReplies;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+    private final ReentrantLock lockLog;
 
-    public ClientWorker (Socket request, Logger logger) {
+    public ClientWorker (Socket request, Logger logger,ReentrantLock lockLog) {
 
         try {
             this.request = request;
             this.in = new DataInputStream( request.getInputStream ( ) );
             this.out = new PrintWriter( request.getOutputStream ( ) , true );
             this.logger = logger;
+            this.lockLog=lockLog;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -60,11 +63,17 @@ public class ClientWorker implements Runnable{
         }
     }
 
+    /**
+     *Logs the message that is sent in the argument
+     * @param message the message to the log
+     */
     public void log ( String message){
-        //lock
-        LocalDateTime timeOfAction = LocalDateTime.now();
-        logger.info(timeOfAction.format(formatter)+"- Action : "+ message);
-        //unlock
-    }
+        try (LockWrapper lock = new LockWrapper(lockLog)) {
+            LocalDateTime timeOfAction = LocalDateTime.now();
+            logger.info(timeOfAction.format(formatter) + "- Action : " + message);
+        }catch (Exception e){
 
+        }
+
+    }
 }
