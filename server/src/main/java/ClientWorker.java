@@ -77,10 +77,10 @@ public class ClientWorker implements Runnable{
 
             }
 
+        }
+
         log("DISCONNECTED Client "+id);
         semaphore.release();
-
-        }
     }
 
     public void log ( String message){
