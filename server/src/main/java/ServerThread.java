@@ -48,11 +48,13 @@ public class ServerThread extends Thread {
             acceptClient();
         } catch ( IOException e ) {
             throw new RuntimeException();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
 
     }
 
-    private void acceptClient() throws IOException {
+    private void acceptClient() throws IOException, InterruptedException {
         FileHandler fh;
         fh = new FileHandler("server.log");
         logger.addHandler(fh);
@@ -62,9 +64,11 @@ public class ServerThread extends Thread {
             while (true) {
                 try {
                     Socket socket = server.accept();
-                    int id = counterId.incrementAndGet();
+
                     if (semaphore.tryAcquire()) {
+                        int id = counterId.incrementAndGet();
                         ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore);
+                        System.out.println ( "***** não funciona lol *****" );
                         executor.submit(clientWorker);
                     } else {
                         waitingClients.offer(socket);
@@ -75,7 +79,7 @@ public class ServerThread extends Thread {
             }
         });
         t.start();
-
+        t.join();
         Thread t2 = new Thread(() -> {
             while (true) {
                 try {
