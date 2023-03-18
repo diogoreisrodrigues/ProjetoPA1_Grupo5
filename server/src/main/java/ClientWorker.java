@@ -9,6 +9,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
@@ -44,8 +46,12 @@ public class ClientWorker implements Runnable{
     //private final String username;
     private Socket socket;
     private Semaphore semaphore;
+    private  Queue<Socket> waitingClients;
+    private  ExecutorService executor;
+    private AtomicInteger counterId;
 
-    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore) {
+
+    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore, Queue<Socket> waitingClients, AtomicInteger counterId, ExecutorService executor) {
 
         try {
             this.request = request;
@@ -53,6 +59,9 @@ public class ClientWorker implements Runnable{
             this.out = new PrintWriter( request.getOutputStream ( ) , true );
             this.logger = logger;
             this.semaphore = semaphore;
+            this.waitingClients = waitingClients;
+            this.counterId = counterId;
+            this.executor = executor;
             //this.username = in.readUTF ( );
             this.id = id;
             ClientWorkers.add(this);
@@ -62,12 +71,12 @@ public class ClientWorker implements Runnable{
     }
 
     @Override
-    public void run() {
+   public void run() {
 
         log( "CONNECTED Client "+id);
 
         while ( request.isConnected() ) {
-          try {
+            try {
                 String message = in.readUTF ( );
                 sendMessage(/*username +" : "+*/message);
 
@@ -122,8 +131,16 @@ public class ClientWorker implements Runnable{
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            semaphore.release();
+            if (!waitingClients.isEmpty()) {
+                Socket socket = waitingClients.poll();
+                int id = counterId.incrementAndGet();
+                ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore, waitingClients, counterId, executor);
+                executor.submit(clientWorker);
+            }
         }
-        semaphore.release();
+
     }
 
     public void log ( String message){
@@ -134,4 +151,3 @@ public class ClientWorker implements Runnable{
     }
 
 }
-

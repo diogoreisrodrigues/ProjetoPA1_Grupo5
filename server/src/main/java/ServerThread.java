@@ -67,7 +67,7 @@ public class ServerThread extends Thread {
 
                     if (semaphore.tryAcquire()) {
                         int id = counterId.incrementAndGet();
-                        ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore);
+                        ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore, waitingClients, counterId, executor);
                         executor.submit(clientWorker);
                     } else {
                         waitingClients.offer(socket);
@@ -75,6 +75,7 @@ public class ServerThread extends Thread {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+                System.out.println(waitingClients);
             }
         });
         t.start();
@@ -86,7 +87,7 @@ public class ServerThread extends Thread {
                         Socket socket = waitingClients.poll();
                         if (socket != null) {
                             int id = counterId.incrementAndGet();
-                            ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore);
+                            ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore, waitingClients, counterId, executor);
                             executor.submit(clientWorker);
                         }
                     }
@@ -94,6 +95,7 @@ public class ServerThread extends Thread {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
+
             }
         });
         t2.start();
