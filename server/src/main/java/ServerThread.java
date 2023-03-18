@@ -68,7 +68,6 @@ public class ServerThread extends Thread {
                     if (semaphore.tryAcquire()) {
                         int id = counterId.incrementAndGet();
                         ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore);
-                        System.out.println ( "***** não funciona lol *****" );
                         executor.submit(clientWorker);
                     } else {
                         waitingClients.offer(socket);
@@ -99,4 +98,9 @@ public class ServerThread extends Thread {
         });
         t2.start();
     }
+
+    public void closeServer(){
+        //TODO: function that ends the server thread
+    }
+
 }

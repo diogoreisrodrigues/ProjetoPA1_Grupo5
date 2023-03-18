@@ -3,49 +3,66 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.Scanner;
+
 
 public class ClientThread extends Thread {
-    private final int port;
-    private final int id;
-    private final int freq;
+
+
     private DataOutputStream out;
     private BufferedReader in;
     private Socket socket;
 
+    private String username;
 
+    public ClientThread ( Socket socket, String username) throws IOException {
 
-    public ClientThread ( int port , int id , int freq ) {
-        this.port = port;
-        this.id = id;
-        this.freq = freq;
+        this.socket = socket;
+        this.out = new DataOutputStream ( socket.getOutputStream ( ) );
+        this.in = new BufferedReader ( new InputStreamReader ( socket.getInputStream ( ) ) );
+        this.username = username;
+
 
     }
     
     public void run ( ) {
         //try {
-        int i = 0;
-
-            System.out.println ( "Sending Data" );
+        waitMessage();
             try {
                 // if(sem.tryAcquire(1, TimeUnit.SECONDS)) {
-                socket = new Socket ( "localhost" , port );
-                out = new DataOutputStream ( socket.getOutputStream ( ) );
-                in = new BufferedReader ( new InputStreamReader ( socket.getInputStream ( ) ) );
-                while ( true ) {
-                    out.writeUTF("My message number " + i + " to the server testest " + "I'm " + id);
-                    String response;
-                    response = in.readLine();
-                    System.out.println("From Server " + response);
+                System.out.println ( "Sending Data" );
+                Scanner scanner = new Scanner(System.in);
+                while ( socket.isConnected() ) {
+
+                    String message = scanner.nextLine();
+                    out.writeUTF(message);
+
                     out.flush();
-                    if(response == null) break;
-                    sleep(freq);
-                    i++;
+
                 }
                 socket.close();
                 
-            } catch ( IOException | InterruptedException e ) {
+            } catch ( IOException e ) {
                 e.printStackTrace ( );
             }
 
+    }
+
+    public void waitMessage(){
+        new Thread(new Runnable(){
+
+            @Override
+            public void run() {
+                String messageReceived;
+                while(socket.isConnected()){
+                    try{
+                        messageReceived = in.readLine();
+                        System.out.println(messageReceived);
+                    }catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }).start();
     }
 }

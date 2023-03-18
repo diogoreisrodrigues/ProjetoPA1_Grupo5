@@ -15,14 +15,18 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.*;
 
 
+
+
 public class ClientWorker implements Runnable{
 
 
     private final Socket request;
-    //private final FileServer fileServer;
+
     //private final ReentrantLock lockQueueReplies;
     private final DataInputStream in;
     private final PrintWriter out;
+
+    public static ArrayList<ClientWorker> ClientWorkers = new ArrayList<>();
 
     private final Logger logger;
 
@@ -36,7 +40,8 @@ public class ClientWorker implements Runnable{
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     private final int id;
-    
+
+    //private final String username;
     private Socket socket;
     private Semaphore semaphore;
 
@@ -48,7 +53,9 @@ public class ClientWorker implements Runnable{
             this.out = new PrintWriter( request.getOutputStream ( ) , true );
             this.logger = logger;
             this.semaphore = semaphore;
+            //this.username = in.readUTF ( );
             this.id = id;
+            ClientWorkers.add(this);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -59,27 +66,63 @@ public class ClientWorker implements Runnable{
 
         log( "CONNECTED Client "+id);
 
-        while ( true ) {
+        while ( request.isConnected() ) {
           try {
                 String message = in.readUTF ( );
-                if ( message == null) break;
-                Filter f= new Filter(message);
-                f.start();
-                f.join();
-                String filteredMessage =f.getMessage();
-                System.out.println ( "***** " + message + " *****" );
-                out.println(filteredMessage);
-                log("Message - Client "+id +" -  "+message);
-                out.println ( "Message received" );
+                sendMessage(/*username +" : "+*/message);
 
-            } catch ( IOException | InterruptedException e ) {
+
+                //Filter f= new Filter(message);
+                //f.start();
+                //f.join();
+                //String filteredMessage =f.getMessage();
+                //System.out.println ( "***** " + message + " *****" );
+                //out.println(filteredMessage);
+                //log("Message - Client "+id +" -  "+message);
+                //out.println ( "Message received" );
+
+            } catch ( IOException e/*| InterruptedException e */) {
+                disconnectClient();
                 break;
 
             }
 
         }
 
+
+    }
+
+    private void sendMessage(String message) {
+        log("Message - Client "+id +" - "+message);
+        for(ClientWorker clientWorker : ClientWorkers){
+            if(clientWorker.id != id){
+
+                clientWorker.out.write(message);
+                clientWorker.out.println();
+                clientWorker.out.flush();
+            }
+        }
+    }
+
+    public void disconnectClient(){
+
+        ClientWorkers.remove(this);
+        sendMessage("Client "+  id + " has left the chat");
         log("DISCONNECTED Client "+id);
+        try{
+            if(socket != null){
+                socket.close();
+            }
+
+            if(out != null){
+                out.close();
+            }
+            if(in != null){
+                in.close();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         semaphore.release();
     }
 
