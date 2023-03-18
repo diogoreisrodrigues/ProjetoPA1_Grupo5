@@ -9,20 +9,26 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.*;
 
 
+
+
 public class ClientWorker implements Runnable{
 
 
     private final Socket request;
-    //private final FileServer fileServer;
+
     //private final ReentrantLock lockQueueReplies;
     private final DataInputStream in;
     private final PrintWriter out;
+
+    public static ArrayList<ClientWorker> ClientWorkers = new ArrayList<>();
 
     private final Logger logger;
 
@@ -36,11 +42,16 @@ public class ClientWorker implements Runnable{
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     private final int id;
-    
+
+    //private final String username;
     private Socket socket;
     private Semaphore semaphore;
+    private  Queue<Socket> waitingClients;
+    private  ExecutorService executor;
+    private AtomicInteger counterId;
 
-    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore) {
+
+    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore, Queue<Socket> waitingClients, AtomicInteger counterId, ExecutorService executor) {
 
         try {
             this.request = request;
@@ -48,7 +59,12 @@ public class ClientWorker implements Runnable{
             this.out = new PrintWriter( request.getOutputStream ( ) , true );
             this.logger = logger;
             this.semaphore = semaphore;
+            this.waitingClients = waitingClients;
+            this.counterId = counterId;
+            this.executor = executor;
+            //this.username = in.readUTF ( );
             this.id = id;
+            ClientWorkers.add(this);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -59,28 +75,72 @@ public class ClientWorker implements Runnable{
 
         log( "CONNECTED Client "+id);
 
-        while ( true ) {
-          try {
+        while ( request.isConnected() ) {
+            try {
                 String message = in.readUTF ( );
-                if ( message == null) break;
-                Filter f= new Filter(message);
-                f.start();
-                f.join();
-                String filteredMessage =f.getMessage();
-                System.out.println ( "***** " + message + " *****" );
-                out.println(filteredMessage);
-                log("Message - Client "+id +" -  "+message);
-                out.println ( "Message received" );
+                sendMessage(/*username +" : "+*/message);
 
-            } catch ( IOException | InterruptedException e ) {
+
+                //Filter f= new Filter(message);
+                //f.start();
+                //f.join();
+                //String filteredMessage =f.getMessage();
+                //System.out.println ( "***** " + message + " *****" );
+                //out.println(filteredMessage);
+                //log("Message - Client "+id +" -  "+message);
+                //out.println ( "Message received" );
+
+            } catch ( IOException e/*| InterruptedException e */) {
+                disconnectClient();
                 break;
 
             }
 
-        log("DISCONNECTED Client "+id);
-        semaphore.release();
-
         }
+
+
+    }
+
+    private void sendMessage(String message) {
+        log("Message - Client "+id +" - "+message);
+        for(ClientWorker clientWorker : ClientWorkers){
+            if(clientWorker.id != id){
+
+                clientWorker.out.write(message);
+                clientWorker.out.println();
+                clientWorker.out.flush();
+            }
+        }
+    }
+
+    public void disconnectClient(){
+
+        ClientWorkers.remove(this);
+        sendMessage("Client "+  id + " has left the chat");
+        log("DISCONNECTED Client "+id);
+        try{
+            if(socket != null){
+                socket.close();
+            }
+
+            if(out != null){
+                out.close();
+            }
+            if(in != null){
+                in.close();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            semaphore.release();
+            if (!waitingClients.isEmpty()) {
+                Socket socket = waitingClients.poll();
+                int id = counterId.incrementAndGet();
+                ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore, waitingClients, counterId, executor);
+                executor.submit(clientWorker);
+            }
+        }
+
     }
 
     public void log ( String message){
@@ -91,4 +151,3 @@ public class ClientWorker implements Runnable{
     }
 
 }
-

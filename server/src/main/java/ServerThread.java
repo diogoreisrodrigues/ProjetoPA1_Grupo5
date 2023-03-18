@@ -48,11 +48,13 @@ public class ServerThread extends Thread {
             acceptClient();
         } catch ( IOException e ) {
             throw new RuntimeException();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
 
     }
 
-    private void acceptClient() throws IOException {
+    private void acceptClient() throws IOException, InterruptedException {
         FileHandler fh;
         fh = new FileHandler("server.log");
         logger.addHandler(fh);
@@ -62,9 +64,10 @@ public class ServerThread extends Thread {
             while (true) {
                 try {
                     Socket socket = server.accept();
-                    int id = counterId.incrementAndGet();
+
                     if (semaphore.tryAcquire()) {
-                        ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore);
+                        int id = counterId.incrementAndGet();
+                        ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore, waitingClients, counterId, executor);
                         executor.submit(clientWorker);
                     } else {
                         waitingClients.offer(socket);
@@ -72,10 +75,11 @@ public class ServerThread extends Thread {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+                System.out.println(waitingClients);
             }
         });
         t.start();
-
+        t.join();
         Thread t2 = new Thread(() -> {
             while (true) {
                 try {
@@ -83,7 +87,7 @@ public class ServerThread extends Thread {
                         Socket socket = waitingClients.poll();
                         if (socket != null) {
                             int id = counterId.incrementAndGet();
-                            ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore);
+                            ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore, waitingClients, counterId, executor);
                             executor.submit(clientWorker);
                         }
                     }
@@ -91,8 +95,14 @@ public class ServerThread extends Thread {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
+
             }
         });
         t2.start();
     }
+
+    public void closeServer(){
+        //TODO: function that ends the server thread
+    }
+
 }
