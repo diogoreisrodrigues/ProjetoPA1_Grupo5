@@ -1,18 +1,16 @@
+import java.io.IOException;
+import java.net.Socket;
+import java.util.Scanner;
+
 public class Client {
 
-    public static void main ( String[] args ) {
+    public static void main ( String[] args ) throws IOException {
 
-
-        ClientThread client = new ClientThread ( 8888 , 1 , 2000 );
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Choose your username to enter the chat: ");
+        String username = scanner.nextLine();
+        Socket socket = new Socket("localhost", 8888);
+        ClientThread client = new ClientThread ( socket, username );
         client.start ( );
-
-        ClientThread client2 = new ClientThread ( 8888 , 2 , 1000 );
-        client2.start ( );
-
-        ClientThread client3 = new ClientThread ( 8888 , 3 , 2000 );
-        client3.start ( );
-
-        ClientThread client4 = new ClientThread ( 8888 , 4 , 1000 );
-        client4.start ( );
     }
 }
