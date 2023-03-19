@@ -51,7 +51,7 @@ public class ClientWorker implements Runnable{
     private AtomicInteger counterId;
 
 
-    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore, Queue<Socket> waitingClients, AtomicInteger counterId, ExecutorService executor) {
+    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore) {
 
         try {
             this.request = request;
@@ -65,6 +65,7 @@ public class ClientWorker implements Runnable{
             //this.username = in.readUTF ( );
             this.id = id;
             ClientWorkers.add(this);
+            sendMessage("The Client "+ id +" has connected to the chat");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -78,6 +79,7 @@ public class ClientWorker implements Runnable{
         while ( request.isConnected() ) {
             try {
                 String message = in.readUTF ( );
+
                 sendMessage(/*username +" : "+*/message);
 
 
@@ -98,14 +100,12 @@ public class ClientWorker implements Runnable{
 
         }
 
-
     }
 
     private void sendMessage(String message) {
         log("Message - Client "+id +" - "+message);
         for(ClientWorker clientWorker : ClientWorkers){
             if(clientWorker.id != id){
-
                 clientWorker.out.write(message);
                 clientWorker.out.println();
                 clientWorker.out.flush();
@@ -133,12 +133,7 @@ public class ClientWorker implements Runnable{
             throw new RuntimeException(e);
         } finally {
             semaphore.release();
-            if (!waitingClients.isEmpty()) {
-                Socket socket = waitingClients.poll();
-                int id = counterId.incrementAndGet();
-                ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore, waitingClients, counterId, executor);
-                executor.submit(clientWorker);
-            }
+
         }
 
     }
@@ -147,6 +142,7 @@ public class ClientWorker implements Runnable{
         //lock
         LocalDateTime timeOfAction = LocalDateTime.now();
         logger.info(timeOfAction.format(formatter)+"- Action : "+ message);
+
         //unlock
     }
 
