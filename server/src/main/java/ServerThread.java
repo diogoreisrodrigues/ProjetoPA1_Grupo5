@@ -1,6 +1,4 @@
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
@@ -24,9 +22,9 @@ public class ServerThread extends Thread {
     private final Semaphore semaphore;
     private final Queue<Socket> waitingClients;
 
-    public ServerThread ( int port ) {
+    public ServerThread ( int port ) throws IOException {
         this.port = port;
-        this.maxClients = 2;
+        this.maxClients = readMaxClientsFromConfig();
         this.executor = Executors.newFixedThreadPool(4);         //Por agora nthread ta um numero fixo mas depois corrigir para ficar dinâmico
         this.semaphore = new Semaphore(maxClients);
         this.counterId = new AtomicInteger(0);
@@ -38,6 +36,8 @@ public class ServerThread extends Thread {
         }
         this.lockLog=new ReentrantLock();
     }
+
+
 
     /**
      * Explicar Java Doc
@@ -52,7 +52,6 @@ public class ServerThread extends Thread {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     private void acceptClient() throws IOException, InterruptedException {
@@ -61,42 +60,36 @@ public class ServerThread extends Thread {
             while (true) {
                 try {
                     Socket socket = server.accept();
+                    semaphore.acquire();
 
-                    if (semaphore.tryAcquire()) {
-                        int id = counterId.incrementAndGet();
-                        ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore, waitingClients, counterId, executor,lockLog);
-                        executor.submit(clientWorker);
-                    } else {
-                        waitingClients.offer(socket);
-                    }
-                } catch (IOException e) {
+                    int id = counterId.incrementAndGet();
+
+
+                    ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore,lockLog);
+                    executor.submit(clientWorker);
+
+                } catch (IOException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                System.out.println(waitingClients);
             }
         });
         t.start();
         t.join();
-        Thread t2 = new Thread(() -> {
-            while (true) {
-                try {
-                    if (semaphore.tryAcquire()) {
-                        Socket socket = waitingClients.poll();
-                        if (socket != null) {
-                            int id = counterId.incrementAndGet();
-                            ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore, waitingClients, counterId, executor,lockLog);
-                            executor.submit(clientWorker);
-                        }
-                    }
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-
-            }
-        });
-        t2.start();
     }
+
+    private int readMaxClientsFromConfig() throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader("server.config"));
+        String line;
+        int maxClients = 0;
+        while ((line = reader.readLine()) != null) {
+            if (line.startsWith("maxClients = ")) {
+                maxClients = Integer.parseInt(line.substring("maxClients = ".length()));
+            }
+        }
+        reader.close();
+        return maxClients;
+    }
+
 
     private void setupLogger() throws IOException {
         Handler[] handlers = logger.getHandlers();
@@ -117,6 +110,7 @@ public class ServerThread extends Thread {
         fh.setFormatter(formatter);
         logger.setUseParentHandlers(false);
     }
+    
     public void closeServer(){
         //TODO: function that ends the server thread
     }
