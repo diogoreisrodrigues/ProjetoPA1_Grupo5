@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -19,6 +20,7 @@ public class ServerThread extends Thread {
     private Socket socket;
     private final ExecutorService executor;
     private static final Logger logger = Logger.getLogger(ServerThread.class.getName());
+    private final ReentrantLock lockLog;
     private AtomicInteger counterId;
     private int maxClients;
     private final Semaphore semaphore;
@@ -36,6 +38,7 @@ public class ServerThread extends Thread {
         } catch ( IOException e ) {
             e.printStackTrace ( );
         }
+        this.lockLog=new ReentrantLock();
     }
 
     /**
@@ -67,7 +70,7 @@ public class ServerThread extends Thread {
 
                     if (semaphore.tryAcquire()) {
                         int id = counterId.incrementAndGet();
-                        ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore, waitingClients, counterId, executor);
+                        ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore, waitingClients, counterId, executor,lockLog);
                         executor.submit(clientWorker);
                     } else {
                         waitingClients.offer(socket);
@@ -87,7 +90,7 @@ public class ServerThread extends Thread {
                         Socket socket = waitingClients.poll();
                         if (socket != null) {
                             int id = counterId.incrementAndGet();
-                            ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore, waitingClients, counterId, executor);
+                            ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore, waitingClients, counterId, executor,lockLog);
                             executor.submit(clientWorker);
                         }
                     }
