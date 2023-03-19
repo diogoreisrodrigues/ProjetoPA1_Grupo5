@@ -35,7 +35,7 @@ public class ClientThread extends Thread {
                 while ( socket.isConnected() ) {
 
                     String message = scanner.nextLine();
-                    out.writeUTF(message);
+                    out.writeUTF(username+ ": " + message);
 
                     out.flush();
 

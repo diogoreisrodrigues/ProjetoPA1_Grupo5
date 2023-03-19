@@ -39,7 +39,7 @@ public class ClientWorker implements Runnable{
     private AtomicInteger nClients;
 
     private Queue <Client> queueReplies;
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private final int id;
 
@@ -49,9 +49,11 @@ public class ClientWorker implements Runnable{
     private  Queue<Socket> waitingClients;
     private  ExecutorService executor;
     private AtomicInteger counterId;
+    private final ReentrantLock lockLogger;
 
 
-    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore) {
+    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore, ReentrantLock lockLog) {
+
 
         try {
             this.request = request;
@@ -69,6 +71,7 @@ public class ClientWorker implements Runnable{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+            this.lockLogger = lockLog;
     }
 
     @Override
@@ -139,11 +142,11 @@ public class ClientWorker implements Runnable{
     }
 
     public void log ( String message){
-        //lock
+        lockLogger.lock();
         LocalDateTime timeOfAction = LocalDateTime.now();
         logger.info(timeOfAction.format(formatter)+"- Action : "+ message);
+        lockLogger.unlock();
 
-        //unlock
     }
 
 }

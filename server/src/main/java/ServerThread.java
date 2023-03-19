@@ -5,9 +5,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.FileHandler;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.*;
 
 public class ServerThread extends Thread {
     private final int port;
@@ -17,6 +16,7 @@ public class ServerThread extends Thread {
     private Socket socket;
     private final ExecutorService executor;
     private static final Logger logger = Logger.getLogger(ServerThread.class.getName());
+    private final ReentrantLock lockLog;
     private AtomicInteger counterId;
     private int maxClients;
     private final Semaphore semaphore;
@@ -34,6 +34,7 @@ public class ServerThread extends Thread {
         } catch ( IOException e ) {
             e.printStackTrace ( );
         }
+        this.lockLog=new ReentrantLock();
     }
 
 
@@ -54,11 +55,7 @@ public class ServerThread extends Thread {
     }
 
     private void acceptClient() throws IOException, InterruptedException {
-        FileHandler fh;
-        fh = new FileHandler("server.log");
-        logger.addHandler(fh);
-        SimpleFormatter formatter = new SimpleFormatter();
-        fh.setFormatter(formatter);
+        setupLogger();
         Thread t = new Thread(() -> {
             while (true) {
                 try {
@@ -67,7 +64,8 @@ public class ServerThread extends Thread {
 
                     int id = counterId.incrementAndGet();
 
-                    ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore);
+
+                    ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore,lockLog);
                     executor.submit(clientWorker);
 
                 } catch (IOException | InterruptedException e) {
@@ -77,7 +75,6 @@ public class ServerThread extends Thread {
         });
         t.start();
         t.join();
-
     }
 
     private int readMaxClientsFromConfig() throws IOException {
@@ -93,19 +90,29 @@ public class ServerThread extends Thread {
         return maxClients;
     }
 
-    public void closeServer() throws InterruptedException, IOException {
-        executor.shutdown();
-        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 
-        // Close the server socket and all client sockets
-        server.close();
-        while (!waitingClients.isEmpty()) {
-            Socket socket = waitingClients.poll();
-            if (socket != null && !socket.isClosed()) {
-                socket.close();
-            }
+    private void setupLogger() throws IOException {
+        Handler[] handlers = logger.getHandlers();
+        for(Handler handler : handlers)
+        {
+            if(handler.getClass() == ConsoleHandler.class)
+                logger.removeHandler(handler);
         }
-        logger.info("Server closed");
+        FileHandler fh;
+        fh = new FileHandler("server.log");
+        logger.addHandler(fh);
+
+        ConsoleHandler ch = new ConsoleHandler();
+        ch.setFormatter(new MyFormatter());
+        logger.addHandler(ch);
+
+        MyFormatter formatter = new MyFormatter();
+        fh.setFormatter(formatter);
+        logger.setUseParentHandlers(false);
+    }
+    
+    public void closeServer(){
+        //TODO: function that ends the server thread
     }
 
 }
