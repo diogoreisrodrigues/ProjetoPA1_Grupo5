@@ -39,7 +39,7 @@ public class ClientWorker implements Runnable{
     private AtomicInteger nClients;
 
     private Queue <Client> queueReplies;
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private final int id;
 
