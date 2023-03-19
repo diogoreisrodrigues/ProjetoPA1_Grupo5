@@ -8,9 +8,7 @@ import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.FileHandler;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
+import java.util.logging.*;
 
 public class ServerThread extends Thread {
     private final int port;
@@ -58,11 +56,7 @@ public class ServerThread extends Thread {
     }
 
     private void acceptClient() throws IOException, InterruptedException {
-        FileHandler fh;
-        fh = new FileHandler("server.log");
-        logger.addHandler(fh);
-        SimpleFormatter formatter = new SimpleFormatter();
-        fh.setFormatter(formatter);
+        setupLogger();
         Thread t = new Thread(() -> {
             while (true) {
                 try {
@@ -104,6 +98,25 @@ public class ServerThread extends Thread {
         t2.start();
     }
 
+    private void setupLogger() throws IOException {
+        Handler[] handlers = logger.getHandlers();
+        for(Handler handler : handlers)
+        {
+            if(handler.getClass() == ConsoleHandler.class)
+                logger.removeHandler(handler);
+        }
+        FileHandler fh;
+        fh = new FileHandler("server.log");
+        logger.addHandler(fh);
+
+        ConsoleHandler ch = new ConsoleHandler();
+        ch.setFormatter(new MyFormatter());
+        logger.addHandler(ch);
+
+        MyFormatter formatter = new MyFormatter();
+        fh.setFormatter(formatter);
+        logger.setUseParentHandlers(false);
+    }
     public void closeServer(){
         //TODO: function that ends the server thread
     }
