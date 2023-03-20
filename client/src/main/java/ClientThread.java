@@ -36,7 +36,7 @@ public class ClientThread extends Thread {
 
     /**
      * This method is executed when the thread starts
-     * Sends the data to the Client and waits for other messages
+     * Sends the data to the Client and waits for the messages
      */
     public void run ( ) {
         //try {
