@@ -67,11 +67,11 @@ public class ClientWorker implements Runnable{
             //this.username = in.readUTF ( );
             this.id = id;
             ClientWorkers.add(this);
+            this.lockLogger = lockLog;
             sendMessage("The Client "+ id +" has connected to the chat");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-            this.lockLogger = lockLog;
     }
 
     @Override
@@ -82,7 +82,7 @@ public class ClientWorker implements Runnable{
         while ( request.isConnected() ) {
             try {
                 String message = in.readUTF ( );
-
+                log("Message - Client "+id +" - "+message);
                 sendMessage(/*username +" : "+*/message);
 
 
@@ -106,7 +106,6 @@ public class ClientWorker implements Runnable{
     }
 
     private void sendMessage(String message) {
-        log("Message - Client "+id +" - "+message);
         for(ClientWorker clientWorker : ClientWorkers){
             if(clientWorker.id != id){
                 clientWorker.out.write(message);
