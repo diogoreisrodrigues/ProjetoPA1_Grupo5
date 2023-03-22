@@ -51,9 +51,14 @@ public class ClientWorker implements Runnable{
     private AtomicInteger counterId;
     private final ReentrantLock lockLogger;
 
+    private final Semaphore filterLock;
 
-    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore, ReentrantLock lockLog) {
+    Queue<Message> buffer;
 
+    Queue<Message> filteredBuffer;
+
+
+    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore, ReentrantLock lockLog, Queue<Message> buffer,Queue<Message> filteredBuffer) {
 
         try {
             this.request = request;
@@ -61,10 +66,7 @@ public class ClientWorker implements Runnable{
             this.out = new PrintWriter( request.getOutputStream ( ) , true );
             this.logger = logger;
             this.semaphore = semaphore;
-            this.waitingClients = waitingClients;
-            this.counterId = counterId;
-            this.executor = executor;
-            //this.username = in.readUTF ( );
+
             this.id = id;
             ClientWorkers.add(this);
             sendMessage("The Client "+ id +" has connected to the chat");
@@ -72,6 +74,9 @@ public class ClientWorker implements Runnable{
             throw new RuntimeException(e);
         }
             this.lockLogger = lockLog;
+            this.filterLock = new Semaphore(0);
+            this.buffer = buffer;
+            this.filteredBuffer = filteredBuffer;
     }
 
     @Override
@@ -79,34 +84,41 @@ public class ClientWorker implements Runnable{
 
         log( "CONNECTED Client "+id);
 
+
         while ( request.isConnected() ) {
             try {
-                String message = in.readUTF ( );
 
-                sendMessage(/*username +" : "+*/message);
+                String simpleMessage = in.readUTF ( );
+                Message message = new Message(id, simpleMessage);
+                //lock
+                buffer.add(message);
+                //unlock
+
+                //filterLock.acquire();
+
+                while(true) {
+                    Message filteredMessage = filteredBuffer.peek();
+                    if (filteredMessage != null && filteredMessage.getClientWorkerId() == id) {
+                        sendMessage(filteredMessage.getMessage());
+                        log("Message - Client "+id +" - "+simpleMessage);
+                        filteredBuffer.remove();
+                        break;
+                    }
+                }
 
 
-                //Filter f= new Filter(message);
-                //f.start();
-                //f.join();
-                //String filteredMessage =f.getMessage();
-                //System.out.println ( "***** " + message + " *****" );
-                //out.println(filteredMessage);
-                //log("Message - Client "+id +" -  "+message);
-                //out.println ( "Message received" );
-
-            } catch ( IOException e/*| InterruptedException e */) {
+            } catch ( IOException e ) {
                 disconnectClient();
                 break;
-
             }
+
 
         }
 
     }
 
     private void sendMessage(String message) {
-        log("Message - Client "+id +" - "+message);
+
         for(ClientWorker clientWorker : ClientWorkers){
             if(clientWorker.id != id){
                 clientWorker.out.write(message);
@@ -148,5 +160,7 @@ public class ClientWorker implements Runnable{
         lockLogger.unlock();
 
     }
+
+
 
 }
