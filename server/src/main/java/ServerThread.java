@@ -18,6 +18,7 @@ public class ServerThread extends Thread {
     private final ExecutorService executor;
     private static final Logger logger = Logger.getLogger(ServerThread.class.getName());
     private final ReentrantLock lockLog;
+    private final Queue<String> queueToLog;
     private AtomicInteger counterId;
     private int maxClients;
     private final Semaphore semaphore;
@@ -36,6 +37,7 @@ public class ServerThread extends Thread {
             e.printStackTrace ( );
         }
         this.lockLog=new ReentrantLock();
+        this.queueToLog= new LinkedList<>();
     }
 
 
@@ -45,6 +47,8 @@ public class ServerThread extends Thread {
      */
     public void run ( ) {
         try {
+            setupLogger();
+            setupLogThread();
             logger.info("Server started");
             System.out.println ( "Accepting Data" );
             serverMenu();
@@ -57,7 +61,6 @@ public class ServerThread extends Thread {
     }
 
     private void acceptClient() throws IOException, InterruptedException {
-        setupLogger();
         Thread t = new Thread(() -> {
             while (true) {
                 try {
@@ -67,7 +70,7 @@ public class ServerThread extends Thread {
                     int id = counterId.incrementAndGet();
 
 
-                    ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore,lockLog);
+                    ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore,lockLog,queueToLog);
                     executor.submit(clientWorker);
 
                 } catch (IOException | InterruptedException e) {
@@ -109,6 +112,10 @@ public class ServerThread extends Thread {
         logger.setUseParentHandlers(false);
     }
 
+    private void setupLogThread(){
+        LogThread l = new LogThread(queueToLog,lockLog,logger);
+        l.start();
+    }
     public void serverMenu () throws InterruptedException {
         Thread m = new Thread(() -> {
             while(true) {
