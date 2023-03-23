@@ -11,11 +11,11 @@ public class LogThread extends Thread{
     private final Logger logger;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public LogThread(Queue<String> messageQueue, ReentrantLock messageQueueLock, Logger logger) {
+    public LogThread(Queue<String> messageQueue, ReentrantLock messageQueueLock, Logger logger, ReentrantLock queueLogLock) {
         this.queueToLog = messageQueue;
         this.lockLog = messageQueueLock;
         this.logger = logger;
-        this.queueLogLock= new ReentrantLock();
+        this.queueLogLock= queueLogLock;
     }
 
     @Override

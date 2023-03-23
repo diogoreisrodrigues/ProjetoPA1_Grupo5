@@ -103,7 +103,7 @@ public class ClientWorker implements Runnable{
 
 
                 String simpleMessage = in.readUTF ( );
-                queueToLog.add("Message - Client "+id +" - "+simpleMessage);
+
                 Message message = new Message(id, simpleMessage);
                 bufferLock.lock();
                 buffer.add(message);
@@ -117,7 +117,7 @@ public class ClientWorker implements Runnable{
                     if (filteredMessage != null && filteredMessage.getClientWorkerId() == id) {
 
                         sendMessage(filteredMessage.getMessage());
-                        log("Message - Client "+id +" - "+simpleMessage);
+                        queueToLog.add("Message - Client "+id +" - "+simpleMessage);
                         filteredBufferLock.lock();
                         filteredBuffer.remove();
                         filteredBufferLock.unlock();

@@ -33,6 +33,8 @@ public class ServerThread extends Thread {
 
     ReentrantLock filteredBufferLock;
 
+    private final ReentrantLock queueLogLock;
+
     public ServerThread ( int port ) throws IOException {
         this.port = port;
         this.maxClients = readMaxClientsFromConfig();
@@ -50,6 +52,7 @@ public class ServerThread extends Thread {
         this.bufferLock = new ReentrantLock();
         this.filteredBufferLock = new ReentrantLock();
         this.queueToLog= new LinkedList<>();
+        this.queueLogLock= new ReentrantLock();
 
     }
 
@@ -86,17 +89,24 @@ public class ServerThread extends Thread {
             while (true) {
                 try {
                     Socket socket = server.accept();
-                    semaphore.acquire();
+
 
                     int id = counterId.incrementAndGet();
 
-
+                    if(!semaphore.tryAcquire()){
+                        queueLogLock.lock();
+                        queueToLog.add("WAITING - CLIENT "+ id);
+                        queueLogLock.unlock();
+                        semaphore.acquire();
+                    }
 
                     ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore,lockLog, buffer, filteredBuffer , bufferLock, filteredBufferLock ,queueToLog);
 
                     executor.submit(clientWorker);
 
-                } catch (IOException | InterruptedException e) {
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -136,7 +146,7 @@ public class ServerThread extends Thread {
     }
 
     private void setupLogThread(){
-        LogThread l = new LogThread(queueToLog,lockLog,logger);
+        LogThread l = new LogThread(queueToLog,lockLog,logger, queueLogLock);
         l.start();
     }
     public void serverMenu () throws InterruptedException {
