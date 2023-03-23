@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.*;
 
-
+import static java.lang.Thread.sleep;
 
 
 public class ClientWorker implements Runnable{
@@ -51,9 +51,19 @@ public class ClientWorker implements Runnable{
     private final ReentrantLock lockLogger;
     private final Queue<String> queueToLog;
 
+    private final Semaphore filterLock;
 
-    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore, ReentrantLock lockLog, Queue<String> messageQueue ) {
+    Queue<Message> buffer;
 
+    Queue<Message> filteredBuffer;
+
+    ReentrantLock bufferLock;
+
+    ReentrantLock filteredBufferLock;
+
+
+
+    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore, ReentrantLock lockLog, Queue<Message> buffer,Queue<Message> filteredBuffer, ReentrantLock bufferLock, ReentrantLock filteredBufferLock, Queue<String> messageQueue) {
 
         try {
             this.request = request;
@@ -61,10 +71,7 @@ public class ClientWorker implements Runnable{
             this.out = new PrintWriter( request.getOutputStream ( ) , true );
             this.logger = logger;
             this.semaphore = semaphore;
-            this.waitingClients = waitingClients;
-            this.counterId = counterId;
-            this.executor = executor;
-            //this.username = in.readUTF ( );
+
             this.id = id;
             ClientWorkers.add(this);
             this.lockLogger = lockLog;
@@ -74,6 +81,14 @@ public class ClientWorker implements Runnable{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+            
+            this.filterLock = new Semaphore(0);
+            this.buffer = buffer;
+            this.filteredBuffer = filteredBuffer;
+            this.bufferLock = bufferLock;
+            this.filteredBufferLock = filteredBufferLock;
+
     }
 
     @Override
@@ -81,33 +96,46 @@ public class ClientWorker implements Runnable{
 
         queueToLog.add( "CONNECTED Client "+id);
 
+
         while ( request.isConnected() ) {
             try {
-                String message = in.readUTF ( );
-                queueToLog.add("Message - Client "+id +" - "+message);
-                sendMessage(/*username +" : "+*/message);
+                
 
 
-                //Filter f= new Filter(message);
-                //f.start();
-                //f.join();
-                //String filteredMessage =f.getMessage();
-                //System.out.println ( "***** " + message + " *****" );
-                //out.println(filteredMessage);
-                //log("Message - Client "+id +" -  "+message);
-                //out.println ( "Message received" );
+                String simpleMessage = in.readUTF ( );
+                queueToLog.add("Message - Client "+id +" - "+simpleMessage);
+                Message message = new Message(id, simpleMessage);
+                bufferLock.lock();
+                buffer.add(message);
+                bufferLock.unlock();
 
-            } catch ( IOException e/*| InterruptedException e */) {
+
+                while(true) {
+                    filteredBufferLock.lock();
+                    Message filteredMessage = filteredBuffer.peek();
+                    filteredBufferLock.unlock();
+                    if (filteredMessage != null && filteredMessage.getClientWorkerId() == id) {
+
+                        sendMessage(filteredMessage.getMessage());
+                        log("Message - Client "+id +" - "+simpleMessage);
+                        filteredBufferLock.lock();
+                        filteredBuffer.remove();
+                        filteredBufferLock.unlock();
+                        break;
+                    }
+                }
+            } catch ( IOException e ) {
                 disconnectClient();
                 break;
-
             }
+
 
         }
 
     }
 
     private void sendMessage(String message) {
+
         for(ClientWorker clientWorker : ClientWorkers){
             if(clientWorker.id != id){
                 clientWorker.out.write(message);
@@ -141,6 +169,9 @@ public class ClientWorker implements Runnable{
         }
 
     }
+
+
+
 
 
 

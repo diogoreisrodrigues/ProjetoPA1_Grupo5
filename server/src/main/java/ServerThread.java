@@ -1,9 +1,11 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
@@ -22,7 +24,14 @@ public class ServerThread extends Thread {
     private AtomicInteger counterId;
     private int maxClients;
     private final Semaphore semaphore;
-    private final Queue<Socket> waitingClients;
+
+    Queue<Message> buffer = new LinkedList<>();
+
+    Queue<Message> filteredBuffer = new LinkedList<>();
+
+    ReentrantLock bufferLock;
+
+    ReentrantLock filteredBufferLock;
 
     public ServerThread ( int port ) throws IOException {
         this.port = port;
@@ -30,14 +39,18 @@ public class ServerThread extends Thread {
         this.executor = Executors.newFixedThreadPool(4);         //Por agora nthread ta um numero fixo mas depois corrigir para ficar dinâmico
         this.semaphore = new Semaphore(maxClients);
         this.counterId = new AtomicInteger(0);
-        this.waitingClients = new LinkedList<>();
+
         try {
             server = new ServerSocket ( this.port );
         } catch ( IOException e ) {
             e.printStackTrace ( );
         }
         this.lockLog=new ReentrantLock();
+
+        this.bufferLock = new ReentrantLock();
+        this.filteredBufferLock = new ReentrantLock();
         this.queueToLog= new LinkedList<>();
+
     }
 
 
@@ -51,7 +64,14 @@ public class ServerThread extends Thread {
             setupLogThread();
             logger.info("Server started");
             System.out.println ( "Accepting Data" );
+
+            Filter f = startFilter(buffer, filteredBuffer, bufferLock, filteredBufferLock);
+            f.start();
+            Filter f2 = startFilter(buffer, filteredBuffer, bufferLock, filteredBufferLock);
+            f2.start();
+
             serverMenu();
+
             acceptClient();
         } catch ( IOException e ) {
             throw new RuntimeException();
@@ -61,6 +81,7 @@ public class ServerThread extends Thread {
     }
 
     private void acceptClient() throws IOException, InterruptedException {
+
         Thread t = new Thread(() -> {
             while (true) {
                 try {
@@ -70,7 +91,9 @@ public class ServerThread extends Thread {
                     int id = counterId.incrementAndGet();
 
 
-                    ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore,lockLog,queueToLog);
+
+                    ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore,lockLog, buffer, filteredBuffer , bufferLock, filteredBufferLock ,queueToLog);
+
                     executor.submit(clientWorker);
 
                 } catch (IOException | InterruptedException e) {
@@ -264,4 +287,14 @@ public class ServerThread extends Thread {
         //TODO: function that ends the server thread
     }
 
+
+    public Filter startFilter(Queue<Message> buffer, Queue<Message> filteredBuffer, ReentrantLock bufferLock, ReentrantLock filteredBufferLock){
+        Filter f= null;
+        try {
+            f = new Filter(buffer, filteredBuffer, bufferLock, filteredBufferLock);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return f;
+    }
 }
