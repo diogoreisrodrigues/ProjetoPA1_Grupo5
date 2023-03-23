@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.*;
 
-
+import static java.lang.Thread.sleep;
 
 
 public class ClientWorker implements Runnable{
@@ -57,8 +57,12 @@ public class ClientWorker implements Runnable{
 
     Queue<Message> filteredBuffer;
 
+    ReentrantLock bufferLock;
 
-    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore, ReentrantLock lockLog, Queue<Message> buffer,Queue<Message> filteredBuffer) {
+    ReentrantLock filteredBufferLock;
+
+
+    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore, ReentrantLock lockLog, Queue<Message> buffer,Queue<Message> filteredBuffer, ReentrantLock bufferLock, ReentrantLock filteredBufferLock) {
 
         try {
             this.request = request;
@@ -77,6 +81,8 @@ public class ClientWorker implements Runnable{
             this.filterLock = new Semaphore(0);
             this.buffer = buffer;
             this.filteredBuffer = filteredBuffer;
+            this.bufferLock = bufferLock;
+            this.filteredBufferLock = filteredBufferLock;
     }
 
     @Override
@@ -90,23 +96,25 @@ public class ClientWorker implements Runnable{
 
                 String simpleMessage = in.readUTF ( );
                 Message message = new Message(id, simpleMessage);
-                //lock
+                bufferLock.lock();
                 buffer.add(message);
-                //unlock
+                bufferLock.unlock();
 
-                //filterLock.acquire();
 
                 while(true) {
+                    filteredBufferLock.lock();
                     Message filteredMessage = filteredBuffer.peek();
+                    filteredBufferLock.unlock();
                     if (filteredMessage != null && filteredMessage.getClientWorkerId() == id) {
+
                         sendMessage(filteredMessage.getMessage());
                         log("Message - Client "+id +" - "+simpleMessage);
+                        filteredBufferLock.lock();
                         filteredBuffer.remove();
+                        filteredBufferLock.unlock();
                         break;
                     }
                 }
-
-
             } catch ( IOException e ) {
                 disconnectClient();
                 break;
@@ -157,7 +165,7 @@ public class ClientWorker implements Runnable{
         lockLogger.lock();
         LocalDateTime timeOfAction = LocalDateTime.now();
         logger.info(timeOfAction.format(formatter)+"- Action : "+ message);
-        lockLogger.unlock();
+         lockLogger.unlock();
 
     }
 

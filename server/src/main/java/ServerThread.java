@@ -26,9 +26,9 @@ public class ServerThread extends Thread {
 
     Queue<Message> filteredBuffer = new LinkedList<>();
 
+    ReentrantLock bufferLock;
 
-
-
+    ReentrantLock filteredBufferLock;
 
     public ServerThread ( int port ) throws IOException {
         this.port = port;
@@ -43,7 +43,8 @@ public class ServerThread extends Thread {
             e.printStackTrace ( );
         }
         this.lockLog=new ReentrantLock();
-
+        this.bufferLock = new ReentrantLock();
+        this.filteredBufferLock = new ReentrantLock();
     }
 
 
@@ -55,8 +56,10 @@ public class ServerThread extends Thread {
         try {
             logger.info("Server started");
             System.out.println ( "Accepting Data" );
-            Filter f = startFilter(buffer, filteredBuffer);
+            Filter f = startFilter(buffer, filteredBuffer, bufferLock, filteredBufferLock);
             f.start();
+            Filter f2 = startFilter(buffer, filteredBuffer, bufferLock, filteredBufferLock);
+            f2.start();
 
             acceptClient();
         } catch ( IOException e ) {
@@ -78,7 +81,7 @@ public class ServerThread extends Thread {
                     int id = counterId.incrementAndGet();
 
 
-                    ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore,lockLog, buffer, filteredBuffer);
+                    ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore,lockLog, buffer, filteredBuffer , bufferLock, filteredBufferLock);
                     executor.submit(clientWorker);
 
                 } catch (IOException | InterruptedException e) {
@@ -129,10 +132,10 @@ public class ServerThread extends Thread {
     }
 
 
-    public Filter startFilter(Queue<Message> buffer, Queue<Message> filteredBuffer){
+    public Filter startFilter(Queue<Message> buffer, Queue<Message> filteredBuffer, ReentrantLock bufferLock, ReentrantLock filteredBufferLock){
         Filter f= null;
         try {
-            f = new Filter(buffer, filteredBuffer);
+            f = new Filter(buffer, filteredBuffer, bufferLock, filteredBufferLock);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Filter extends Thread{
 
@@ -16,12 +17,15 @@ public class Filter extends Thread{
 
     Queue<Message> filteredBuffer;
 
+    ReentrantLock bufferLock;
 
+    ReentrantLock filteredBufferLock;
 
-
-    public Filter(Queue<Message> buffer,Queue<Message> filteredBuffer) throws IOException {
+    public Filter(Queue<Message> buffer, Queue<Message> filteredBuffer , ReentrantLock bufferLock, ReentrantLock filteredBufferLock) throws IOException {
         this.buffer=buffer;
         this.filteredBuffer = filteredBuffer;
+        this.bufferLock = bufferLock;
+        this.filteredBufferLock = filteredBufferLock;
         //this.filterLock = filterLock;
     }
 
@@ -30,7 +34,6 @@ public class Filter extends Thread{
     }
 
     private boolean FilterVerify(String message) throws IOException {
-
 
         String[] wordSplitter= message.split(" ");
 
@@ -68,50 +71,32 @@ public class Filter extends Thread{
             bannedWordsFile("bannedWords.txt");
 
             while (true) {
+                bufferLock.lock();
                 Message bufferMessage = buffer.poll();
+                bufferLock.unlock();
                 if (bufferMessage == null) {
+                    sleep(1000);
                     continue;
                 }
                 if (FilterVerify(bufferMessage.getMessage())) {
+
                     System.out.println("A message was removed for being inappropriate: " + bufferMessage.getMessage());
                     bufferMessage.setMessage("A message was removed for being inappropriate");
-                } else {
+                    filteredBufferLock.lock();
                     filteredBuffer.offer(bufferMessage);
+                    filteredBufferLock.unlock();
+                } else {
+                    filteredBufferLock.lock();
+                    filteredBuffer.offer(bufferMessage);
+                    filteredBufferLock.unlock();
                 }
+
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-
-
-
-        /*try {
-            bannedWordsFile("bannedWords.txt");
-        } catch (IOException e) {
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        while (true) {
-            try {
 
-                if (buffer.size() > 0) {
-                    for (Message bufferMessage : buffer) {
-                        System.out.println("entrei no ciclo");
-                        if (FilterVerify(bufferMessage.getMessage())) {
-
-                            message = "A message was removed for being inappropriate";
-                        } else {
-                            message = bufferMessage;
-                        }
-                        filterLock.release();
-                    }
-                    buffer.remove(buffer.size() - 1);
-                }
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-         */
     }
 }
