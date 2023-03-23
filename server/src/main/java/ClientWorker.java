@@ -39,7 +39,6 @@ public class ClientWorker implements Runnable{
     private AtomicInteger nClients;
 
     private Queue <Client> queueReplies;
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private final int id;
 
@@ -50,6 +49,7 @@ public class ClientWorker implements Runnable{
     private  ExecutorService executor;
     private AtomicInteger counterId;
     private final ReentrantLock lockLogger;
+    private final Queue<String> queueToLog;
 
     private final Semaphore filterLock;
 
@@ -62,7 +62,8 @@ public class ClientWorker implements Runnable{
     ReentrantLock filteredBufferLock;
 
 
-    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore, ReentrantLock lockLog, Queue<Message> buffer,Queue<Message> filteredBuffer, ReentrantLock bufferLock, ReentrantLock filteredBufferLock) {
+
+    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore, ReentrantLock lockLog, Queue<Message> buffer,Queue<Message> filteredBuffer, ReentrantLock bufferLock, ReentrantLock filteredBufferLock, Queue<String> messageQueue) {
 
         try {
             this.request = request;
@@ -73,28 +74,36 @@ public class ClientWorker implements Runnable{
 
             this.id = id;
             ClientWorkers.add(this);
+            this.lockLogger = lockLog;
+            this.queueToLog=messageQueue;
             sendMessage("The Client "+ id +" has connected to the chat");
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-            this.lockLogger = lockLog;
+
+            
             this.filterLock = new Semaphore(0);
             this.buffer = buffer;
             this.filteredBuffer = filteredBuffer;
             this.bufferLock = bufferLock;
             this.filteredBufferLock = filteredBufferLock;
+
     }
 
     @Override
    public void run() {
 
-        log( "CONNECTED Client "+id);
+        queueToLog.add( "CONNECTED Client "+id);
 
 
         while ( request.isConnected() ) {
             try {
+                
+
 
                 String simpleMessage = in.readUTF ( );
+                queueToLog.add("Message - Client "+id +" - "+simpleMessage);
                 Message message = new Message(id, simpleMessage);
                 bufferLock.lock();
                 buffer.add(message);
@@ -140,7 +149,7 @@ public class ClientWorker implements Runnable{
 
         ClientWorkers.remove(this);
         sendMessage("Client "+  id + " has left the chat");
-        log("DISCONNECTED Client "+id);
+        queueToLog.add("DISCONNECTED Client "+id);
         try{
             if(socket != null){
                 socket.close();
@@ -161,13 +170,8 @@ public class ClientWorker implements Runnable{
 
     }
 
-    public void log ( String message){
-        lockLogger.lock();
-        LocalDateTime timeOfAction = LocalDateTime.now();
-        logger.info(timeOfAction.format(formatter)+"- Action : "+ message);
-         lockLogger.unlock();
 
-    }
+
 
 
 

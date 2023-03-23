@@ -64,6 +64,7 @@ public class Filter extends Thread{
         bannedWordsFile.close();
     }
 
+
     @Override
     public void run() {
 
