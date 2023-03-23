@@ -103,7 +103,6 @@ public class ClientWorker implements Runnable{
 
 
                 String simpleMessage = in.readUTF ( );
-
                 Message message = new Message(id, simpleMessage);
                 bufferLock.lock();
                 buffer.add(message);
