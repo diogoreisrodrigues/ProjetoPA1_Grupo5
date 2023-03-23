@@ -39,7 +39,6 @@ public class ClientWorker implements Runnable{
     private AtomicInteger nClients;
 
     private Queue <Client> queueReplies;
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private final int id;
 
@@ -50,9 +49,10 @@ public class ClientWorker implements Runnable{
     private  ExecutorService executor;
     private AtomicInteger counterId;
     private final ReentrantLock lockLogger;
+    private final Queue<String> queueToLog;
 
 
-    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore, ReentrantLock lockLog) {
+    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore, ReentrantLock lockLog, Queue<String> messageQueue ) {
 
 
         try {
@@ -68,7 +68,9 @@ public class ClientWorker implements Runnable{
             this.id = id;
             ClientWorkers.add(this);
             this.lockLogger = lockLog;
+            this.queueToLog=messageQueue;
             sendMessage("The Client "+ id +" has connected to the chat");
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -77,12 +79,12 @@ public class ClientWorker implements Runnable{
     @Override
    public void run() {
 
-        log( "CONNECTED Client "+id);
+        queueToLog.add( "CONNECTED Client "+id);
 
         while ( request.isConnected() ) {
             try {
                 String message = in.readUTF ( );
-                log("Message - Client "+id +" - "+message);
+                queueToLog.add("Message - Client "+id +" - "+message);
                 sendMessage(/*username +" : "+*/message);
 
 
@@ -119,7 +121,7 @@ public class ClientWorker implements Runnable{
 
         ClientWorkers.remove(this);
         sendMessage("Client "+  id + " has left the chat");
-        log("DISCONNECTED Client "+id);
+        queueToLog.add("DISCONNECTED Client "+id);
         try{
             if(socket != null){
                 socket.close();
@@ -140,12 +142,6 @@ public class ClientWorker implements Runnable{
 
     }
 
-    public void log ( String message){
-        lockLogger.lock();
-        LocalDateTime timeOfAction = LocalDateTime.now();
-        logger.info(timeOfAction.format(formatter)+"- Action : "+ message);
-        lockLogger.unlock();
 
-    }
 
 }
