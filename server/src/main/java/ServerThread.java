@@ -34,6 +34,8 @@ public class ServerThread extends Thread {
     ReentrantLock filteredBufferLock;
 
     private final ReentrantLock queueLogLock;
+    private boolean maxClientsIsChanged;
+
 
 
 
@@ -55,9 +57,13 @@ public class ServerThread extends Thread {
         this.filteredBufferLock = new ReentrantLock();
         this.queueToLog= new LinkedList<>();
         this.queueLogLock= new ReentrantLock();
+        this.maxClientsIsChanged=false;
 
     }
 
+    public void setMaxClients(int maxClients) {
+        this.maxClients = maxClients;
+    }
 
     /**
      * Explicar Java Doc
@@ -77,6 +83,12 @@ public class ServerThread extends Thread {
             setupMenu();
 
             acceptClient();
+
+            if(maxClientsIsChanged) {
+                setMaxClients(readMaxClientsFromConfig());
+                maxClientsIsChanged = false;
+            }
+
         } catch ( IOException e ) {
             throw new RuntimeException();
         } catch (InterruptedException e) {
@@ -152,9 +164,10 @@ public class ServerThread extends Thread {
     }
 
     private void setupMenu(){
-        ServerMenu m= new ServerMenu(logger);
+        ServerMenu m= new ServerMenu(logger,maxClientsIsChanged);
         m.start();
     }
+
 
     public void closeServer(){
         //TODO: function that ends the server thread

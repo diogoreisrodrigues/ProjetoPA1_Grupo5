@@ -8,9 +8,11 @@ import java.util.logging.Logger;
 public class ServerMenu extends Thread {
 
     private final Logger logger;
+    private boolean maxClientsIsChanged;
 
-    public ServerMenu(Logger logger) {
+    public ServerMenu(Logger logger,Boolean maxClientsIsChanged) {
         this.logger = logger;
+        this.maxClientsIsChanged = maxClientsIsChanged;
     }
 
     public void run(){
@@ -67,7 +69,8 @@ public class ServerMenu extends Thread {
                         removeWordsFromFile("bannedWords.txt");
                         break;
                     case 4:
-
+                        changeMaxClientsFile();
+                        break;
                     default:
                         System.out.println("Opção incorreta");
                         break;
@@ -163,4 +166,29 @@ public class ServerMenu extends Thread {
         }
 
     }
+
+    public void changeMaxClientsFile(){
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("server.config"));
+            String oldLine = reader.readLine();
+            reader.close();
+
+            System.out.println("Insira o novo número máximo de clientes: ");
+            Scanner scanner = new Scanner(System.in);
+            String newMaxClients= scanner.next();
+            maxClientsIsChanged=true;
+
+            String newLine = "maxClients = " + newMaxClients;
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter("server.config"));
+            writer.write(newLine);
+            writer.close();
+
+            System.out.println("O número máximo de clientes foi atualiazado para ."+ newMaxClients);
+
+        } catch (IOException e) {
+            System.out.println("Ocorreu um erro na atualização do número de clientes " + e.getMessage());
+        }
+    }
+
 }
