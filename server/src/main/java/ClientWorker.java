@@ -19,6 +19,10 @@ import java.util.logging.*;
 import static java.lang.Thread.sleep;
 
 
+/**
+ * This class represents a Client Worker thread in a chat server.
+ * Each Client Worker thread handles the communication for a client.
+ */
 public class ClientWorker implements Runnable{
 
 
@@ -62,7 +66,20 @@ public class ClientWorker implements Runnable{
     ReentrantLock filteredBufferLock;
 
 
-
+    /**
+     * This is the constructor of ClientWorker class.
+     *
+     * @param request is the socket connection to the client.
+     * @param logger is the logger for logging chat messages.
+     * @param id is the id of the Client Worker thread.
+     * @param semaphore is the semaphore responsible for controlling access to the server.
+     * @param lockLog is the reentrant lock for logging chat messages.
+     * @param buffer is the buffer responsible for storing incoming chat messages.
+     * @param filteredBuffer is the buffer responsible for storing filtered chat messages.
+     * @param bufferLock is the reentrant lock for accessing the buffer.
+     * @param filteredBufferLock is the reentrant lock for accessing the filtered buffer.
+     * @param messageQueue is the queue of chat messages to log.
+     */
     public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore, ReentrantLock lockLog, Queue<Message> buffer,Queue<Message> filteredBuffer, ReentrantLock bufferLock, ReentrantLock filteredBufferLock, Queue<String> messageQueue) {
 
         try {
@@ -82,27 +99,37 @@ public class ClientWorker implements Runnable{
             throw new RuntimeException(e);
         }
 
-            
-            this.filterLock = new Semaphore(0);
-            this.buffer = buffer;
-            this.filteredBuffer = filteredBuffer;
-            this.bufferLock = bufferLock;
-            this.filteredBufferLock = filteredBufferLock;
+
+        this.filterLock = new Semaphore(0);
+        this.buffer = buffer;
+        this.filteredBuffer = filteredBuffer;
+        this.bufferLock = bufferLock;
+        this.filteredBufferLock = filteredBufferLock;
 
     }
 
+    /**
+     * This method represents the main logic of the ClientWorker, which runs in a separate thread when a client connects to the chat.
+     * It adds a log entry showing that the client is connected and reading incoming messages from the client socket.
+     * It then adds messages to the shared message buffer and tries to filter messages specific to that client.
+     * If it finds a message, it sends the message to all other clients in the chat, logs the message, and removes it from the filter buffer.
+     * If reading the message throws an IOException, it calls the disconnectClient method to disconnect the client from the chat.
+     *
+     * @throws RuntimeException if an error occurs while disconnecting the client.
+     */
     @Override
-   public void run() {
+    public void run() {
 
         queueToLog.add( "CONNECTED Client "+id);
 
 
         while ( request.isConnected() ) {
             try {
-                
+
 
 
                 String simpleMessage = in.readUTF ( );
+
                 Message message = new Message(id, simpleMessage);
                 bufferLock.lock();
                 buffer.add(message);
@@ -133,6 +160,11 @@ public class ClientWorker implements Runnable{
 
     }
 
+    /**
+     * This method send a message to all connected Clients but not for the Client o sends it.
+     *
+     * @param message is the message that will be sent.
+     */
     private void sendMessage(String message) {
 
         for(ClientWorker clientWorker : ClientWorkers){
@@ -144,6 +176,12 @@ public class ClientWorker implements Runnable{
         }
     }
 
+    /**
+     * This method removes the Client from the server and notifies the other Clients that this determinate Client left the chat.
+     * After this, logs the event, then, close's de Client socket and release the semaphore used for controlling the number of active Clients.
+     *
+     * @throws RuntimeException if an I/O error occurs while trying to close the socket, input stream, or output stream.
+     */
     public void disconnectClient(){
 
         ClientWorkers.remove(this);
