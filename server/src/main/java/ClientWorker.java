@@ -16,9 +16,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.*;
 
+import static java.lang.Thread.sleep;
 
 
-
+/**
+ * This class represents a Client Worker thread in a chat server.
+ * Each Client Worker thread handles the communication for a client.
+ */
 public class ClientWorker implements Runnable{
 
 
@@ -39,7 +43,6 @@ public class ClientWorker implements Runnable{
     private AtomicInteger nClients;
 
     private Queue <Client> queueReplies;
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private final int id;
 
@@ -50,10 +53,34 @@ public class ClientWorker implements Runnable{
     private  ExecutorService executor;
     private AtomicInteger counterId;
     private final ReentrantLock lockLogger;
+    private final Queue<String> queueToLog;
+
+    private final Semaphore filterLock;
+
+    Queue<Message> buffer;
+
+    Queue<Message> filteredBuffer;
+
+    ReentrantLock bufferLock;
+
+    ReentrantLock filteredBufferLock;
 
 
-    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore, ReentrantLock lockLog) {
-
+    /**
+     * This is the constructor of ClientWorker class.
+     *
+     * @param request is the socket connection to the client.
+     * @param logger is the logger for logging chat messages.
+     * @param id is the id of the Client Worker thread.
+     * @param semaphore is the semaphore responsible for controlling access to the server.
+     * @param lockLog is the reentrant lock for logging chat messages.
+     * @param buffer is the buffer responsible for storing incoming chat messages.
+     * @param filteredBuffer is the buffer responsible for storing filtered chat messages.
+     * @param bufferLock is the reentrant lock for accessing the buffer.
+     * @param filteredBufferLock is the reentrant lock for accessing the filtered buffer.
+     * @param messageQueue is the queue of chat messages to log.
+     */
+    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore, ReentrantLock lockLog, Queue<Message> buffer,Queue<Message> filteredBuffer, ReentrantLock bufferLock, ReentrantLock filteredBufferLock, Queue<String> messageQueue) {
 
         try {
             this.request = request;
@@ -61,52 +88,85 @@ public class ClientWorker implements Runnable{
             this.out = new PrintWriter( request.getOutputStream ( ) , true );
             this.logger = logger;
             this.semaphore = semaphore;
-            this.waitingClients = waitingClients;
-            this.counterId = counterId;
-            this.executor = executor;
-            //this.username = in.readUTF ( );
+
             this.id = id;
             ClientWorkers.add(this);
+            this.lockLogger = lockLog;
+            this.queueToLog=messageQueue;
             sendMessage("The Client "+ id +" has connected to the chat");
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-            this.lockLogger = lockLog;
+
+
+        this.filterLock = new Semaphore(0);
+        this.buffer = buffer;
+        this.filteredBuffer = filteredBuffer;
+        this.bufferLock = bufferLock;
+        this.filteredBufferLock = filteredBufferLock;
+
     }
 
+    /**
+     * This method represents the main logic of the ClientWorker, which runs in a separate thread when a client connects to the chat.
+     * It adds a log entry showing that the client is connected and reading incoming messages from the client socket.
+     * It then adds messages to the shared message buffer and tries to filter messages specific to that client.
+     * If it finds a message, it sends the message to all other clients in the chat, logs the message, and removes it from the filter buffer.
+     * If reading the message throws an IOException, it calls the disconnectClient method to disconnect the client from the chat.
+     *
+     * @throws RuntimeException if an error occurs while disconnecting the client.
+     */
     @Override
-   public void run() {
+    public void run() {
 
-        log( "CONNECTED Client "+id);
+        queueToLog.add( "CONNECTED Client "+id);
+
 
         while ( request.isConnected() ) {
             try {
-                String message = in.readUTF ( );
-
-                sendMessage(/*username +" : "+*/message);
 
 
-                //Filter f= new Filter(message);
-                //f.start();
-                //f.join();
-                //String filteredMessage =f.getMessage();
-                //System.out.println ( "***** " + message + " *****" );
-                //out.println(filteredMessage);
-                //log("Message - Client "+id +" -  "+message);
-                //out.println ( "Message received" );
 
-            } catch ( IOException e/*| InterruptedException e */) {
+                String simpleMessage = in.readUTF ( );
+
+                Message message = new Message(id, simpleMessage);
+                bufferLock.lock();
+                buffer.add(message);
+                bufferLock.unlock();
+
+
+                while(true) {
+                    filteredBufferLock.lock();
+                    Message filteredMessage = filteredBuffer.peek();
+                    filteredBufferLock.unlock();
+                    if (filteredMessage != null && filteredMessage.getClientWorkerId() == id) {
+
+                        sendMessage(filteredMessage.getMessage());
+                        queueToLog.add("Message - Client "+id +" - "+simpleMessage);
+                        filteredBufferLock.lock();
+                        filteredBuffer.remove();
+                        filteredBufferLock.unlock();
+                        break;
+                    }
+                }
+            } catch ( IOException e ) {
                 disconnectClient();
                 break;
-
             }
+
 
         }
 
     }
 
+    /**
+     * This method send a message to all connected Clients but not for the Client o sends it.
+     *
+     * @param message is the message that will be sent.
+     */
     private void sendMessage(String message) {
-        log("Message - Client "+id +" - "+message);
+
         for(ClientWorker clientWorker : ClientWorkers){
             if(clientWorker.id != id){
                 clientWorker.out.write(message);
@@ -116,11 +176,17 @@ public class ClientWorker implements Runnable{
         }
     }
 
+    /**
+     * This method removes the Client from the server and notifies the other Clients that this determinate Client left the chat.
+     * After this, logs the event, then, close's de Client socket and release the semaphore used for controlling the number of active Clients.
+     *
+     * @throws RuntimeException if an I/O error occurs while trying to close the socket, input stream, or output stream.
+     */
     public void disconnectClient(){
 
         ClientWorkers.remove(this);
         sendMessage("Client "+  id + " has left the chat");
-        log("DISCONNECTED Client "+id);
+        queueToLog.add("DISCONNECTED Client "+id);
         try{
             if(socket != null){
                 socket.close();
@@ -141,12 +207,9 @@ public class ClientWorker implements Runnable{
 
     }
 
-    public void log ( String message){
-        lockLogger.lock();
-        LocalDateTime timeOfAction = LocalDateTime.now();
-        logger.info(timeOfAction.format(formatter)+"- Action : "+ message);
-        lockLogger.unlock();
 
-    }
+
+
+
 
 }
