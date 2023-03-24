@@ -34,6 +34,7 @@ public class Filter extends Thread{
      *
      * @throws IOException if there is an error reading the banned words file.
      */
+
     public Filter(Queue<Message> buffer, Queue<Message> filteredBuffer , ReentrantLock bufferLock, ReentrantLock filteredBufferLock) throws IOException {
         this.buffer=buffer;
         this.filteredBuffer = filteredBuffer;
@@ -97,6 +98,7 @@ public class Filter extends Thread{
         }
         bannedWordsFile.close();
     }
+
 
 
     /**
