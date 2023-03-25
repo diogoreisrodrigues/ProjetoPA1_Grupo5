@@ -26,7 +26,7 @@ public class ServerThread extends Thread {
     private final Queue<String> queueToLog;
     private AtomicInteger counterId;
     private int maxClients;
-    private final Semaphore semaphore;
+    Semaphore semaphore;
 
     Queue<Message> buffer = new LinkedList<>();
 
@@ -119,7 +119,7 @@ public class ServerThread extends Thread {
                         semaphore.acquire();
                     }
 
-                    ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore, lockLog, buffer, filteredBuffer, bufferLock, filteredBufferLock, queueToLog);
+                    ClientWorker clientWorker = new ClientWorker(socket, logger, id, lockLog, buffer, filteredBuffer, bufferLock, filteredBufferLock, queueToLog, semaphore);
 
                     executor.submit(clientWorker);
 
