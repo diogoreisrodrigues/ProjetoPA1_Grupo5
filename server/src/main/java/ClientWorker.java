@@ -72,7 +72,6 @@ public class ClientWorker implements Runnable{
      * @param request is the socket connection to the client.
      * @param logger is the logger for logging chat messages.
      * @param id is the id of the Client Worker thread.
-     * @param semaphore is the semaphore responsible for controlling access to the server.
      * @param lockLog is the reentrant lock for logging chat messages.
      * @param buffer is the buffer responsible for storing incoming chat messages.
      * @param filteredBuffer is the buffer responsible for storing filtered chat messages.
@@ -80,20 +79,20 @@ public class ClientWorker implements Runnable{
      * @param filteredBufferLock is the reentrant lock for accessing the filtered buffer.
      * @param messageQueue is the queue of chat messages to log.
      */
-    public ClientWorker (Socket request, Logger logger, int id, Semaphore semaphore, ReentrantLock lockLog, Queue<Message> buffer,Queue<Message> filteredBuffer, ReentrantLock bufferLock, ReentrantLock filteredBufferLock, Queue<String> messageQueue) {
+    public ClientWorker (Socket request, Logger logger, int id, ReentrantLock lockLog, Queue<Message> buffer,Queue<Message> filteredBuffer, ReentrantLock bufferLock, ReentrantLock filteredBufferLock, Queue<String> messageQueue, Semaphore semaphore) {
 
         try {
             this.request = request;
             this.in = new DataInputStream( request.getInputStream ( ) );
             this.out = new PrintWriter( request.getOutputStream ( ) , true );
             this.logger = logger;
-            this.semaphore = semaphore;
+
 
             this.id = id;
             ClientWorkers.add(this);
             this.lockLogger = lockLog;
             this.queueToLog=messageQueue;
-            sendMessage("The Client "+ id +" has connected to the chat");
+            sendMessage("The Client "+ id +" has connected to the chat", ClientWorkers);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -105,6 +104,7 @@ public class ClientWorker implements Runnable{
         this.filteredBuffer = filteredBuffer;
         this.bufferLock = bufferLock;
         this.filteredBufferLock = filteredBufferLock;
+        this.semaphore = semaphore;
 
     }
 
@@ -140,7 +140,7 @@ public class ClientWorker implements Runnable{
                     filteredBufferLock.unlock();
                     if (filteredMessage != null && filteredMessage.getClientWorkerId() == id) {
 
-                        sendMessage(filteredMessage.getMessage());
+                        sendMessage(filteredMessage.getMessage(), ClientWorkers);
                         queueToLog.add("Message - Client "+id +" - "+simpleMessage);
                         filteredBufferLock.lock();
                         filteredBuffer.remove();
@@ -149,7 +149,7 @@ public class ClientWorker implements Runnable{
                     }
                 }
             } catch ( IOException e ) {
-                disconnectClient();
+                disconnectClient(ClientWorkers,id, queueToLog,request, out, in);
                 break;
             }
 
@@ -163,7 +163,7 @@ public class ClientWorker implements Runnable{
      *
      * @param message is the message that will be sent.
      */
-    private void sendMessage(String message) {
+    public void sendMessage(String message, ArrayList<ClientWorker> ClientWorkers) {
 
         for(ClientWorker clientWorker : ClientWorkers){
             if(clientWorker.id != id){
@@ -180,10 +180,10 @@ public class ClientWorker implements Runnable{
      *
      * @throws RuntimeException if an I/O error occurs while trying to close the socket, input stream, or output stream.
      */
-    public void disconnectClient(){
+    public void disconnectClient(ArrayList<ClientWorker> ClientWorkers, int id, Queue<String> messageQueue, Socket socket, PrintWriter out, DataInputStream in){
 
         ClientWorkers.remove(this);
-        sendMessage("Client "+  id + " has left the chat");
+        sendMessage("Client "+  id + " has left the chat", ClientWorkers);
         queueToLog.add("DISCONNECTED Client "+id);
         try{
             if(socket != null){
@@ -204,10 +204,5 @@ public class ClientWorker implements Runnable{
         }
 
     }
-
-
-
-
-
 
 }
