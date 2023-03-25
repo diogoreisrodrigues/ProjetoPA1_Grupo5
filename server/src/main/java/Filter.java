@@ -16,7 +16,9 @@ public class Filter extends Thread{
     private static final List<String> bannedWords= new ArrayList<>();
 
     Queue<Message> buffer;
-    ;
+
+
+
 
     Queue<Message> filteredBuffer;
 
@@ -42,14 +44,6 @@ public class Filter extends Thread{
         //this.filterLock = filterLock;
     }
 
-    /**
-     * Getter for the message being filtered.
-     *
-     * @return the message being filtered.
-     */
-    public String getMessage() {
-        return message;
-    }
 
     /**
      * Verifies if the given message contains any banned words.
@@ -60,7 +54,7 @@ public class Filter extends Thread{
      *
      * @throws IOException if there is an error reading the banned words file.
      */
-    private boolean FilterVerify(String message) throws IOException {
+    public boolean FilterVerify(String message) throws IOException {
 
         String[] wordSplitter= message.split(" ");
 
@@ -99,6 +93,10 @@ public class Filter extends Thread{
     }
 
 
+    public Queue<Message> getFilteredBuffer() {
+        return filteredBuffer;
+    }
+
     /**
      * This method runs the thread that filters the messages from the clients and places them in a filtered buffer.
      * Firstly reads a list of banned words from a file, and then it continuously polls the input buffer for messages.
@@ -133,13 +131,11 @@ public class Filter extends Thread{
                     filteredBuffer.offer(bufferMessage);
                     filteredBufferLock.unlock();
                 }
-
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-
     }
+
+
 }

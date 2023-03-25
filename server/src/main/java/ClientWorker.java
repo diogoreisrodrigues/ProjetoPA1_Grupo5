@@ -126,8 +126,6 @@ public class ClientWorker implements Runnable{
         while ( request.isConnected() ) {
             try {
 
-
-
                 String simpleMessage = in.readUTF ( );
 
                 Message message = new Message(id, simpleMessage);
