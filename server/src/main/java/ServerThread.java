@@ -11,6 +11,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.*;
 
+/**
+ * This class extends Thread, and it's responsible for accepting connections, apply the filter and the menu setup.
+ */
 public class ServerThread extends Thread {
     private final int port;
     private DataInputStream in;
@@ -36,8 +39,14 @@ public class ServerThread extends Thread {
     private final ReentrantLock queueLogLock;
 
 
-
-    public ServerThread (int port ) throws IOException {
+    /**
+     * This is the constructor for ServerThread.
+     * Initializes the server socket on the port that we specify and creates the necessary locks and queues for the server.
+     *
+     * @param port is the port number for listen to incoming Clients connections.
+     * @throws IOException if an I/O error occurs when creating the server socket.
+     */
+    public ServerThread(int port) throws IOException {
         this.port = port;
         this.maxClients = readMaxClientsFromConfig();
         this.executor = Executors.newFixedThreadPool(4);         //Por agora nthread ta um numero fixo mas depois corrigir para ficar dinâmico
@@ -45,29 +54,32 @@ public class ServerThread extends Thread {
         this.counterId = new AtomicInteger(0);
 
         try {
-            server = new ServerSocket ( this.port );
-        } catch ( IOException e ) {
-            e.printStackTrace ( );
+            server = new ServerSocket(this.port);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        this.lockLog=new ReentrantLock();
+        this.lockLog = new ReentrantLock();
 
         this.bufferLock = new ReentrantLock();
         this.filteredBufferLock = new ReentrantLock();
-        this.queueToLog= new LinkedList<>();
-        this.queueLogLock= new ReentrantLock();
+        this.queueToLog = new LinkedList<>();
+        this.queueLogLock = new ReentrantLock();
 
     }
 
 
     /**
-     * Explicar Java Doc
+     * In this method we execute the serve's mains logic.
+     * Which consists of setting up the logger and log thread, starting the filters, setting up the menu, and accepting Client connections.
+     *
+     * @throws RuntimeException if an IO or Interrupted Exception occurs during the execution.
      */
-    public void run ( ) {
+    public void run() {
         try {
             setupLogger();
             setupLogThread();
             logger.info("Server started");
-            System.out.println ( "Accepting Data" );
+            System.out.println("Accepting Data");
 
             Filter f = startFilter(buffer, filteredBuffer, bufferLock, filteredBufferLock);
             f.start();
@@ -77,13 +89,19 @@ public class ServerThread extends Thread {
             setupMenu();
 
             acceptClient();
-        } catch ( IOException e ) {
+        } catch (IOException e) {
             throw new RuntimeException();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
+    /**
+     * This method accepts client connections and create a new Thread for each Client.
+     * If the maximum number of clients has been reached, the method will wait until a spot becomes available.
+     *
+     * @throws RuntimeException if an IO or Interruped Exception occurs when an error occurs while waiting for a connection.
+     */
     private void acceptClient() throws IOException, InterruptedException {
 
         Thread t = new Thread(() -> {
@@ -94,14 +112,14 @@ public class ServerThread extends Thread {
 
                     int id = counterId.incrementAndGet();
 
-                    if(!semaphore.tryAcquire()){
+                    if (!semaphore.tryAcquire()) {
                         queueLogLock.lock();
-                        queueToLog.add("WAITING - CLIENT "+ id);
+                        queueToLog.add("WAITING - CLIENT " + id);
                         queueLogLock.unlock();
                         semaphore.acquire();
                     }
 
-                    ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore,lockLog, buffer, filteredBuffer , bufferLock, filteredBufferLock ,queueToLog);
+                    ClientWorker clientWorker = new ClientWorker(socket, logger, id, semaphore, lockLog, buffer, filteredBuffer, bufferLock, filteredBufferLock, queueToLog);
 
                     executor.submit(clientWorker);
 
@@ -116,6 +134,12 @@ public class ServerThread extends Thread {
         t.join();
     }
 
+    /**
+     * This method reads the maximum number of Clients allowed to connect to the server from a configuration file.
+     *
+     * @return the maximum number of clients allowed to connect to yhe server.
+     * @throws IOException if occurs an error wile reading the configuration file.
+     */
     private int readMaxClientsFromConfig() throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader("server.config"));
         String line;
@@ -130,11 +154,15 @@ public class ServerThread extends Thread {
     }
 
 
+    /**
+     * This method sets up the logger by removing any existing console handlers, adding a file handler, and setting a custom formatter.
+     *
+     * @throws IOException if occurs an error while creating the file handler.
+     */
     private void setupLogger() throws IOException {
         Handler[] handlers = logger.getHandlers();
-        for(Handler handler : handlers)
-        {
-            if(handler.getClass() == ConsoleHandler.class)
+        for (Handler handler : handlers) {
+            if (handler.getClass() == ConsoleHandler.class)
                 logger.removeHandler(handler);
         }
         FileHandler fh;
@@ -146,23 +174,40 @@ public class ServerThread extends Thread {
         logger.setUseParentHandlers(false);
     }
 
-    private void setupLogThread(){
-        LogThread l = new LogThread(queueToLog,lockLog,logger, queueLogLock);
+    /**
+     * Starts a new Thread to handle logging messages from the queueToLog buffer.
+     * This LogThread instance is created with the provided queueLog, lockLog, logger and queueLogLock parameters.
+     */
+    private void setupLogThread() {
+        LogThread l = new LogThread(queueToLog, lockLog, logger, queueLogLock);
         l.start();
     }
 
-    private void setupMenu(){
-        ServerMenu m= new ServerMenu(logger);
+    /**
+     * Sets up the Server Menu by creating a new instance of the ServerMenu class and starts it.
+     */
+    private void setupMenu() {
+        ServerMenu m = new ServerMenu(logger);
         m.start();
     }
 
-    public void closeServer(){
+    public void closeServer() {
         //TODO: function that ends the server thread
     }
 
 
-    public Filter startFilter(Queue<Message> buffer, Queue<Message> filteredBuffer, ReentrantLock bufferLock, ReentrantLock filteredBufferLock){
-        Filter f= null;
+    /**
+     * This method creates a new filter.
+     *
+     * @param buffer             is the buffer of incoming messages to filter.
+     * @param filteredBuffer     is the buffer of filtered messages to be sent to clients.
+     * @param bufferLock         is the lock used to synchronize access to the buffer queue.
+     * @param filteredBufferLock is the lock used to synchronize access to the filtered buffer queues.
+     * @return the new Filter instance that was created.
+     * @throws RuntimeException if an IOException occurs while creating the Filter instance.
+     */
+    public Filter startFilter(Queue<Message> buffer, Queue<Message> filteredBuffer, ReentrantLock bufferLock, ReentrantLock filteredBufferLock) {
+        Filter f = null;
         try {
             f = new Filter(buffer, filteredBuffer, bufferLock, filteredBufferLock);
         } catch (IOException e) {
