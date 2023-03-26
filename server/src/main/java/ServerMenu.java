@@ -3,14 +3,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.concurrent.Semaphore;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Logger;
 public class ServerMenu extends Thread {
 
     private final Logger logger;
 
-    public ServerMenu(Logger logger) {
+    private int maxClients;
+    private Semaphore semaphore;
+
+    public ServerMenu(Logger logger, int maxClients, Semaphore semaphore) {
         this.logger = logger;
+        this.maxClients = maxClients;
+        this.semaphore = semaphore;
     }
 
     public void run(){
@@ -67,7 +73,8 @@ public class ServerMenu extends Thread {
                         removeWordsFromFile("bannedWords.txt");
                         break;
                     case 4:
-
+                        changeMaxClients();
+                        break;
                     default:
                         System.out.println("Opção incorreta");
                         break;
@@ -75,6 +82,20 @@ public class ServerMenu extends Thread {
             }
         });
         m.start();
+    }
+
+    private void changeMaxClients() {
+        Scanner scanner4 = new Scanner(System.in);
+        System.out.println("Introduza o novo número máximo de clientes:");
+        int newMaxClients = scanner4.nextInt();
+        while(newMaxClients <= 0){
+            System.out.println("O número máximo de clientes deve ser maior que zero. Introduza um número válido:");
+            newMaxClients = scanner4.nextInt();
+        }
+        semaphore.release(newMaxClients - maxClients);
+        maxClients = newMaxClients;
+        System.out.println("O número máximo de clientes foi atualizado para "+maxClients+".");
+
     }
 
     public void addWordToFile(String filePath, String word) {
