@@ -13,7 +13,7 @@ public class ClientThread extends Thread {
 
 
     private DataOutputStream out;
-    BufferedReader in;
+    private BufferedReader in;
     private Socket socket;
 
     private String username;
@@ -49,7 +49,6 @@ public class ClientThread extends Thread {
 
                 String message = scanner.nextLine();
                 out.writeUTF(username+ ": " + message);
-
                 out.flush();
 
             }
@@ -81,5 +80,23 @@ public class ClientThread extends Thread {
                 }
             }
         }).start();
+    }
+    public DataOutputStream getOut() {
+        return out;
+    }
+
+    public BufferedReader getIn() {
+        return in;
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+    public void setIn(BufferedReader in) {
+        this.in = in;
     }
 }
