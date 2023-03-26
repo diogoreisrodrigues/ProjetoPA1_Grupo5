@@ -12,7 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * This class represents a Client Worker thread in a chat server.
  * Each Client Worker thread handles the communication for a client.
  */
-public class ClientWorker implements Runnable{
+public class ClientWorker extends Thread{
 
     private final Socket request;
     private final DataInputStream in;
@@ -26,6 +26,10 @@ public class ClientWorker implements Runnable{
     private Queue<Message> filteredBuffer;
     private ReentrantLock bufferLock;
     private ReentrantLock filteredBufferLock;
+
+
+
+    private String simpleMessage;
 
     /**
      * This is the constructor of ClientWorker class.
@@ -74,7 +78,7 @@ public class ClientWorker implements Runnable{
 
         while ( request.isConnected() ) {
             try {
-                String simpleMessage = in.readUTF ( );
+                simpleMessage = in.readUTF ( );
 
                 Message message = new Message(id, simpleMessage);
                 bufferLock.lock();
@@ -146,5 +150,13 @@ public class ClientWorker implements Runnable{
 
         }
 
+    }
+
+    public String getSimpleMessage() {
+        return simpleMessage;
+    }
+
+    public void setSimpleMessage(String simpleMessage) {
+        this.simpleMessage = simpleMessage;
     }
 }
