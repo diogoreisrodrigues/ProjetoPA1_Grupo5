@@ -187,7 +187,7 @@ public class ServerThread extends Thread {
      * Sets up the Server Menu by creating a new instance of the ServerMenu class and starts it.
      */
     private void setupMenu() {
-        ServerMenu m = new ServerMenu(logger);
+        ServerMenu m = new ServerMenu(logger, maxClients, semaphore);
         m.start();
     }
 
