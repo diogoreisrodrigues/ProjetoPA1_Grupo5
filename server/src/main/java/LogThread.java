@@ -55,7 +55,6 @@ public class LogThread extends Thread{
             }
         }
     }
-
     /**
      * Logs the given message with a timestamp.
      *

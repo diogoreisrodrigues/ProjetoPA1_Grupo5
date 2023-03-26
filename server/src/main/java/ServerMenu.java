@@ -3,22 +3,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
-import java.util.concurrent.Semaphore;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Logger;
+
+/**
+ *
+ */
 public class ServerMenu extends Thread {
 
     private final Logger logger;
-
     private int maxClients;
     private MySemaphore semaphore;
 
+    /**
+     * @param logger
+     * @param maxClients
+     * @param semaphore
+     */
     public ServerMenu(Logger logger, int maxClients, MySemaphore semaphore) {
         this.logger = logger;
         this.maxClients = maxClients;
         this.semaphore = semaphore;
     }
 
+    /**
+     *
+     */
     public void run(){
         try {
             serverMenu();
@@ -26,6 +36,10 @@ public class ServerMenu extends Thread {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * @throws InterruptedException
+     */
     public void serverMenu () throws InterruptedException {
         Thread m = new Thread(() -> {
             while(true) {
@@ -84,6 +98,9 @@ public class ServerMenu extends Thread {
         m.start();
     }
 
+    /**
+     *
+     */
     private void changeMaxClients() {
         Scanner scanner4 = new Scanner(System.in);
         System.out.println("Introduza o novo número máximo de clientes:");
@@ -94,17 +111,19 @@ public class ServerMenu extends Thread {
         }
         if(newMaxClients > maxClients){
             semaphore.release(newMaxClients - maxClients);
-            maxClients = newMaxClients;
-            System.out.println("O número máximo de clientes foi atualizado para "+maxClients+".");
         }
         else {
             semaphore.reducePermits(maxClients-newMaxClients);
-            maxClients = newMaxClients;
-            System.out.println("O número máximo de clientes foi atualizado para "+maxClients+".");
         }
+        maxClients = newMaxClients;
+        System.out.println("O número máximo de clientes foi atualizado para "+maxClients+".");
 
     }
 
+    /**
+     * @param filePath
+     * @param word
+     */
     public void addWordToFile(String filePath, String word) {
         try {
 
@@ -133,6 +152,11 @@ public class ServerMenu extends Thread {
         }
     }
 
+    /**
+     * @param fileName
+     * @param word
+     * @return
+     */
     public boolean wordInFile(String fileName, String word) {
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
@@ -147,7 +171,9 @@ public class ServerMenu extends Thread {
         return false;
     }
 
-
+    /**
+     * @param fileName
+     */
     public void removeWordsFromFile(String fileName) {
 
         List<String> bannedWords = new ArrayList<>();

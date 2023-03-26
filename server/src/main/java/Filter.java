@@ -3,27 +3,20 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
-import java.util.concurrent.Semaphore;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * This class extends Thread and implements a word filtering system for the chat.
  */
 public class Filter extends Thread{
-
-    private String message;
     private static final List<String> bannedWords= new ArrayList<>();
-
     Queue<Message> buffer;
-
-
-
-
     Queue<Message> filteredBuffer;
-
     ReentrantLock bufferLock;
-
     ReentrantLock filteredBufferLock;
 
     /**
@@ -33,7 +26,6 @@ public class Filter extends Thread{
      * @param filteredBuffer is the buffer where the filtered messages are stored.
      * @param bufferLock is the lock used for the buffer.
      * @param filteredBufferLock is the lock used for the filtered buffer.
-     *
      * @throws IOException if there is an error reading the banned words file.
      */
     public Filter(Queue<Message> buffer, Queue<Message> filteredBuffer , ReentrantLock bufferLock, ReentrantLock filteredBufferLock) throws IOException {
@@ -43,7 +35,6 @@ public class Filter extends Thread{
         this.filteredBufferLock = filteredBufferLock;
         //this.filterLock = filterLock;
     }
-
 
     /**
      * Verifies if the given message contains any banned words.
@@ -65,7 +56,6 @@ public class Filter extends Thread{
         }
         return false;
     }
-
     /**
      * Reads the file with the banned words and stores them in the bannedWords list.
      *
@@ -120,17 +110,12 @@ public class Filter extends Thread{
                     continue;
                 }
                 if (FilterVerify(bufferMessage.getMessage())) {
-
                     System.out.println("A message was removed for being inappropriate: " + bufferMessage.getMessage());
                     bufferMessage.setMessage("A message was removed for being inappropriate");
-                    filteredBufferLock.lock();
-                    filteredBuffer.offer(bufferMessage);
-                    filteredBufferLock.unlock();
-                } else {
-                    filteredBufferLock.lock();
-                    filteredBuffer.offer(bufferMessage);
-                    filteredBufferLock.unlock();
                 }
+                filteredBufferLock.lock();
+                filteredBuffer.offer(bufferMessage);
+                filteredBufferLock.unlock();
             }
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);

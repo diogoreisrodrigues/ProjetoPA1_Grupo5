@@ -1,11 +1,7 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
-
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
@@ -16,28 +12,19 @@ import java.util.logging.*;
  */
 public class ServerThread extends Thread {
     private final int port;
-    private DataInputStream in;
-    private PrintWriter out;
     private ServerSocket server;
-    private Socket socket;
     private final ExecutorService executor;
     private static final Logger logger = Logger.getLogger(ServerThread.class.getName());
     private final ReentrantLock lockLog;
     private final Queue<String> queueToLog;
     private AtomicInteger counterId;
     private int maxClients;
-    MySemaphore semaphore;
-
-    Queue<Message> buffer = new LinkedList<>();
-
-    Queue<Message> filteredBuffer = new LinkedList<>();
-
-    ReentrantLock bufferLock;
-
-    ReentrantLock filteredBufferLock;
-
+    private MySemaphore semaphore;
+    private Queue<Message> buffer = new LinkedList<>();
+    private Queue<Message> filteredBuffer = new LinkedList<>();
+    private ReentrantLock bufferLock;
+    private ReentrantLock filteredBufferLock;
     private final ReentrantLock queueLogLock;
-
 
     /**
      * This is the constructor for ServerThread.
@@ -52,6 +39,10 @@ public class ServerThread extends Thread {
         this.executor = Executors.newFixedThreadPool(4);         //Por agora nthread ta um numero fixo mas depois corrigir para ficar dinâmico
         this.semaphore = new MySemaphore(maxClients);
         this.counterId = new AtomicInteger(0);
+        this.bufferLock = new ReentrantLock();
+        this.filteredBufferLock = new ReentrantLock();
+        this.queueToLog = new LinkedList<>();
+        this.queueLogLock = new ReentrantLock();
 
         try {
             server = new ServerSocket(this.port);
@@ -59,14 +50,7 @@ public class ServerThread extends Thread {
             e.printStackTrace();
         }
         this.lockLog = new ReentrantLock();
-
-        this.bufferLock = new ReentrantLock();
-        this.filteredBufferLock = new ReentrantLock();
-        this.queueToLog = new LinkedList<>();
-        this.queueLogLock = new ReentrantLock();
-
     }
-
 
     /**
      * In this method we execute the serve's mains logic.
@@ -109,7 +93,6 @@ public class ServerThread extends Thread {
                 try {
                     Socket socket = server.accept();
 
-
                     int id = counterId.incrementAndGet();
 
                     if (!semaphore.tryAcquire()) {
@@ -119,13 +102,11 @@ public class ServerThread extends Thread {
                         semaphore.acquire();
                     }
 
-                    ClientWorker clientWorker = new ClientWorker(socket, logger, id, lockLog, buffer, filteredBuffer, bufferLock, filteredBufferLock, queueToLog, semaphore);
+                    ClientWorker clientWorker = new ClientWorker(socket, id, buffer, filteredBuffer, bufferLock, filteredBufferLock, queueToLog, semaphore);
 
                     executor.submit(clientWorker);
 
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } catch (InterruptedException e) {
+                } catch (IOException | InterruptedException e ) {
                     throw new RuntimeException(e);
                 }
             }
@@ -190,11 +171,6 @@ public class ServerThread extends Thread {
         ServerMenu m = new ServerMenu(logger, maxClients, semaphore);
         m.start();
     }
-
-    public void closeServer() {
-        //TODO: function that ends the server thread
-    }
-
 
     /**
      * This method creates a new filter.

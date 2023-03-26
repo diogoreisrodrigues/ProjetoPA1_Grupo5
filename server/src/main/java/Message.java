@@ -3,7 +3,6 @@
  */
 public class Message {
 
-
     private final int clientWorkerId;
     private String Message;
 

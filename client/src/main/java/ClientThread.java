@@ -10,12 +10,9 @@ import java.util.Scanner;
  * This thread manages the communication with a Client that is connected to the Server
  */
 public class ClientThread extends Thread {
-
-
     private DataOutputStream out;
     private BufferedReader in;
     private Socket socket;
-
     private String username;
 
     /**
@@ -65,37 +62,50 @@ public class ClientThread extends Thread {
      * Wait for the messages from the Client and prints them to the console
      */
     public void waitMessage(){
-        new Thread(new Runnable(){
-
-            @Override
-            public void run() {
-                String messageReceived;
-                while(socket.isConnected()){
-                    try{
-                        messageReceived = in.readLine();
-                        System.out.println(messageReceived);
-                    }catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+        new Thread(() -> {
+            String messageReceived;
+            while(socket.isConnected()){
+                try{
+                    messageReceived = in.readLine();
+                    System.out.println(messageReceived);
+                }catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }).start();
     }
+
+    /**
+     * @return
+     */
     public DataOutputStream getOut() {
         return out;
     }
 
+    /**
+     * @return
+     */
     public BufferedReader getIn() {
         return in;
     }
 
+    /**
+     * @return
+     */
     public Socket getSocket() {
         return socket;
     }
 
+    /**
+     * @return
+     */
     public String getUsername() {
         return username;
     }
+
+    /**
+     * @param in
+     */
     public void setIn(BufferedReader in) {
         this.in = in;
     }
