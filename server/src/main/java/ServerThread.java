@@ -103,8 +103,7 @@ public class ServerThread extends Thread {
                     }
 
                     ClientWorker clientWorker = new ClientWorker(socket, id, buffer, filteredBuffer, bufferLock, filteredBufferLock, queueToLog, semaphore);
-
-                    executor.submit(clientWorker);
+                    clientWorker.start();
 
                 } catch (IOException | InterruptedException e ) {
                     throw new RuntimeException(e);
