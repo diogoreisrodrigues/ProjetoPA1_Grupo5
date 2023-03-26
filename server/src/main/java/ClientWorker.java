@@ -36,6 +36,7 @@ public class ClientWorker implements Runnable{
      * @param bufferLock is the reentrant lock for accessing the buffer.
      * @param filteredBufferLock is the reentrant lock for accessing the filtered buffer.
      * @param messageQueue is the queue of chat messages to log.
+     * @param semaphore is the semaphore used to control server entrances and exits
      */
     public ClientWorker (Socket request, int id, Queue<Message> buffer,Queue<Message> filteredBuffer, ReentrantLock bufferLock, ReentrantLock filteredBufferLock, Queue<String> messageQueue, Semaphore semaphore) {
 
