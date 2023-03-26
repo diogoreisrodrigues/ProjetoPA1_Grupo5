@@ -1,22 +1,11 @@
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.Socket;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
+import java.util.ArrayList;
 import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.*;
-
-import static java.lang.Thread.sleep;
 
 
 /**
@@ -25,87 +14,48 @@ import static java.lang.Thread.sleep;
  */
 public class ClientWorker implements Runnable{
 
-
     private final Socket request;
-
-    //private final ReentrantLock lockQueueReplies;
     private final DataInputStream in;
     private final PrintWriter out;
-
     public static ArrayList<ClientWorker> ClientWorkers = new ArrayList<>();
-
-    private final Logger logger;
-
-    private byte[] result;
-
-    private static final List<String> bannedWords= new ArrayList<>();
-
-    private AtomicInteger nClients;
-
-    private Queue <Client> queueReplies;
-
     private final int id;
-
-    //private final String username;
-    private Socket socket;
     private Semaphore semaphore;
-    private  Queue<Socket> waitingClients;
-    private  ExecutorService executor;
-    private AtomicInteger counterId;
-    private final ReentrantLock lockLogger;
     private final Queue<String> queueToLog;
-
     private final Semaphore filterLock;
-
-    Queue<Message> buffer;
-
-    Queue<Message> filteredBuffer;
-
-    ReentrantLock bufferLock;
-
-    ReentrantLock filteredBufferLock;
-
+    private Queue<Message> buffer;
+    private Queue<Message> filteredBuffer;
+    private ReentrantLock bufferLock;
+    private ReentrantLock filteredBufferLock;
 
     /**
      * This is the constructor of ClientWorker class.
-     *
      * @param request is the socket connection to the client.
-     * @param logger is the logger for logging chat messages.
      * @param id is the id of the Client Worker thread.
-     * @param lockLog is the reentrant lock for logging chat messages.
      * @param buffer is the buffer responsible for storing incoming chat messages.
      * @param filteredBuffer is the buffer responsible for storing filtered chat messages.
      * @param bufferLock is the reentrant lock for accessing the buffer.
      * @param filteredBufferLock is the reentrant lock for accessing the filtered buffer.
      * @param messageQueue is the queue of chat messages to log.
      */
-    public ClientWorker (Socket request, Logger logger, int id, ReentrantLock lockLog, Queue<Message> buffer,Queue<Message> filteredBuffer, ReentrantLock bufferLock, ReentrantLock filteredBufferLock, Queue<String> messageQueue, Semaphore semaphore) {
+    public ClientWorker (Socket request, int id, Queue<Message> buffer,Queue<Message> filteredBuffer, ReentrantLock bufferLock, ReentrantLock filteredBufferLock, Queue<String> messageQueue, Semaphore semaphore) {
 
         try {
             this.request = request;
             this.in = new DataInputStream( request.getInputStream ( ) );
             this.out = new PrintWriter( request.getOutputStream ( ) , true );
-            this.logger = logger;
-
-
             this.id = id;
             ClientWorkers.add(this);
-            this.lockLogger = lockLog;
             this.queueToLog=messageQueue;
             sendMessage("The Client "+ id +" has connected to the chat", ClientWorkers);
-
+            this.filterLock = new Semaphore(0);
+            this.buffer = buffer;
+            this.filteredBuffer = filteredBuffer;
+            this.bufferLock = bufferLock;
+            this.filteredBufferLock = filteredBufferLock;
+            this.semaphore = semaphore;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-
-        this.filterLock = new Semaphore(0);
-        this.buffer = buffer;
-        this.filteredBuffer = filteredBuffer;
-        this.bufferLock = bufferLock;
-        this.filteredBufferLock = filteredBufferLock;
-        this.semaphore = semaphore;
-
     }
 
     /**
@@ -122,17 +72,14 @@ public class ClientWorker implements Runnable{
 
         queueToLog.add( "CONNECTED Client "+id);
 
-
         while ( request.isConnected() ) {
             try {
-
                 String simpleMessage = in.readUTF ( );
 
                 Message message = new Message(id, simpleMessage);
                 bufferLock.lock();
                 buffer.add(message);
                 bufferLock.unlock();
-
 
                 while(true) {
                     filteredBufferLock.lock();
@@ -152,14 +99,11 @@ public class ClientWorker implements Runnable{
                 disconnectClient(ClientWorkers,id, queueToLog,request, out, in);
                 break;
             }
-
-
         }
-
     }
 
     /**
-     * This method send a message to all connected Clients but not for the Client o sends it.
+     * This method send a message to all connected Clients but not for the Client who sends it.
      *
      * @param message is the message that will be sent.
      */
@@ -173,7 +117,6 @@ public class ClientWorker implements Runnable{
             }
         }
     }
-
     /**
      * This method removes the Client from the server and notifies the other Clients that this determinate Client left the chat.
      * After this, logs the event, then, close's de Client socket and release the semaphore used for controlling the number of active Clients.
@@ -204,5 +147,4 @@ public class ClientWorker implements Runnable{
         }
 
     }
-
 }

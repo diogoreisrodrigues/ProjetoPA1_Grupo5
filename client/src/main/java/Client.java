@@ -15,7 +15,6 @@ public class Client {
      * @throws IOException if occurs an I/O error while creating the socket or starting the thread
      */
     public static void main ( String[] args ) throws IOException {
-
         Scanner scanner = new Scanner(System.in);
         System.out.println("Choose your username to enter the chat: ");
         String username = scanner.nextLine();
