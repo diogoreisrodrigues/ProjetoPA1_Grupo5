@@ -11,9 +11,9 @@ public class ServerMenu extends Thread {
     private final Logger logger;
 
     private int maxClients;
-    private Semaphore semaphore;
+    private MySemaphore semaphore;
 
-    public ServerMenu(Logger logger, int maxClients, Semaphore semaphore) {
+    public ServerMenu(Logger logger, int maxClients, MySemaphore semaphore) {
         this.logger = logger;
         this.maxClients = maxClients;
         this.semaphore = semaphore;
@@ -92,9 +92,16 @@ public class ServerMenu extends Thread {
             System.out.println("O número máximo de clientes deve ser maior que zero. Introduza um número válido:");
             newMaxClients = scanner4.nextInt();
         }
-        semaphore.release(newMaxClients - maxClients);
-        maxClients = newMaxClients;
-        System.out.println("O número máximo de clientes foi atualizado para "+maxClients+".");
+        if(newMaxClients > maxClients){
+            semaphore.release(newMaxClients - maxClients);
+            maxClients = newMaxClients;
+            System.out.println("O número máximo de clientes foi atualizado para "+maxClients+".");
+        }
+        else {
+            semaphore.reducePermits(maxClients-newMaxClients);
+            maxClients = newMaxClients;
+            System.out.println("O número máximo de clientes foi atualizado para "+maxClients+".");
+        }
 
     }
 

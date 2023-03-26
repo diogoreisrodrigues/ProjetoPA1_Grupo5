@@ -26,7 +26,7 @@ public class ServerThread extends Thread {
     private final Queue<String> queueToLog;
     private AtomicInteger counterId;
     private int maxClients;
-    Semaphore semaphore;
+    MySemaphore semaphore;
 
     Queue<Message> buffer = new LinkedList<>();
 
@@ -50,7 +50,7 @@ public class ServerThread extends Thread {
         this.port = port;
         this.maxClients = readMaxClientsFromConfig();
         this.executor = Executors.newFixedThreadPool(4);         //Por agora nthread ta um numero fixo mas depois corrigir para ficar dinâmico
-        this.semaphore = new Semaphore(maxClients);
+        this.semaphore = new MySemaphore(maxClients);
         this.counterId = new AtomicInteger(0);
 
         try {
