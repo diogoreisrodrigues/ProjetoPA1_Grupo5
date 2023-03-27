@@ -22,5 +22,6 @@ public class Client {
         ClientThread client = new ClientThread ( socket, username );
         client.start ( );
     }
+
 }
 
