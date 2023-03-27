@@ -121,6 +121,4 @@ public class Filter extends Thread{
             throw new RuntimeException(e);
         }
     }
-
-
 }

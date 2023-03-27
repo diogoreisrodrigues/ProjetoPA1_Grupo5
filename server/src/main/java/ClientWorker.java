@@ -26,11 +26,6 @@ public class ClientWorker extends Thread{
     private Queue<Message> filteredBuffer;
     private ReentrantLock bufferLock;
     private ReentrantLock filteredBufferLock;
-
-
-
-    private String simpleMessage;
-
     /**
      * This is the constructor of ClientWorker class.
      * @param request is the socket connection to the client.
@@ -79,7 +74,7 @@ public class ClientWorker extends Thread{
 
         while ( request.isConnected() ) {
             try {
-                simpleMessage = in.readUTF ( );
+                String simpleMessage = in.readUTF ( );
 
                 Message message = new Message(id, simpleMessage);
                 bufferLock.lock();
@@ -150,14 +145,5 @@ public class ClientWorker extends Thread{
             semaphore.release();
 
         }
-
-    }
-
-    public String getSimpleMessage() {
-        return simpleMessage;
-    }
-
-    public void setSimpleMessage(String simpleMessage) {
-        this.simpleMessage = simpleMessage;
     }
 }

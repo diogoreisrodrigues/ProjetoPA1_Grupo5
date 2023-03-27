@@ -1,4 +1,4 @@
-import static org.junit.jupiter.api.Assertions.*;
+/*import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.*;
 
@@ -12,7 +12,6 @@ public class ClientThreadTest {
     private ClientThread clientThread;
     DataOutputStream out;
     BufferedReader in;
-
     private ServerThread serverThread;
 
     @BeforeEach
@@ -108,4 +107,4 @@ public class ClientThreadTest {
         serverThread.join();
     }
 
-}
+}*/

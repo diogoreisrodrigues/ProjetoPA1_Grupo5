@@ -31,7 +31,7 @@ public class LogThread extends Thread{
     }
 
     /**
-     * This method runs the LogThread instance until the program is terminated.
+     * This method runs the LogThread instance until the program is finished.
      * The method continuously checks the queueToLog to see if there are any messages to log.
      * If the queue is not empty, the method acquires the queueLogLock.
      * Polls the message from the queue, logs the message with the log method, and releases the lock.

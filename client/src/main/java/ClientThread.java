@@ -76,34 +76,39 @@ public class ClientThread extends Thread {
     }
 
     /**
-     * @return
+     * This is the getter for the output stream
+     * @return output stream
      */
     public DataOutputStream getOut() {
         return out;
     }
 
     /**
-     * @return
+     * This is the getter for the buffered reader
+     * @return buffered reader in
      */
     public BufferedReader getIn() {
         return in;
     }
 
     /**
-     * @return
+     * This is the getter for socket of the client
+     * @return socket of the client
      */
     public Socket getSocket() {
         return socket;
     }
 
     /**
-     * @return
+     * This is the getter for username
+     * @return username of the client
      */
     public String getUsername() {
         return username;
     }
 
     /**
+     * Setter for the Buffered Reader in
      * @param in
      */
     public void setIn(BufferedReader in) {
