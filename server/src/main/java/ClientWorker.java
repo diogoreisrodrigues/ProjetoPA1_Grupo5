@@ -96,7 +96,7 @@ public class ClientWorker extends Thread{
                     }
                 }
             } catch ( IOException e ) {
-                disconnectClient(ClientWorkers,id, queueToLog,request, out, in);
+                disconnectClient();
                 break;
             }
         }
@@ -106,6 +106,7 @@ public class ClientWorker extends Thread{
      * This method send a message to all connected Clients but not for the Client who sends it.
      *
      * @param message is the message that will be sent.
+     * @param ClientWorkers the ArrayList that stores all the ClientWorkers created
      */
     public void sendMessage(String message, ArrayList<ClientWorker> ClientWorkers) {
 
@@ -123,14 +124,14 @@ public class ClientWorker extends Thread{
      *
      * @throws RuntimeException if an I/O error occurs while trying to close the socket, input stream, or output stream.
      */
-    public void disconnectClient(ArrayList<ClientWorker> ClientWorkers, int id, Queue<String> messageQueue, Socket socket, PrintWriter out, DataInputStream in){
+    public void disconnectClient(){
 
         ClientWorkers.remove(this);
         sendMessage("Client "+  id + " has left the chat", ClientWorkers);
         queueToLog.add("DISCONNECTED Client "+id);
         try{
-            if(socket != null){
-                socket.close();
+            if(request != null){
+                request.close();
             }
 
             if(out != null){

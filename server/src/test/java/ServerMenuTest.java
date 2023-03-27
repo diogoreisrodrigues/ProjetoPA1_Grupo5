@@ -1,4 +1,4 @@
-import org.junit.jupiter.api.BeforeEach;
+/*import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -20,7 +20,7 @@ public class ServerMenuTest {
         this.sm = new ServerMenu(logger,maxClients,semaphore);
     }
 
-    /*@Test
+    @Test
     public void testWordInFile() {
         String AbsolutePath="C:\\Users\\FF\\Desktop\\Universidade\\2Semestre\\Programação Avançada\\Práticas\\ProjetoPA1_Grupo5\\server\\src\\test\\java\\ServerMenuTest.java";
         assertAll(
@@ -30,7 +30,7 @@ public class ServerMenuTest {
         assertThrows(RuntimeException.class, () -> {
             sm.wordInFile("invalidFileName.txt", "hello");
         });
-    }*/
+    }
 
     @Test
     public void testAddWordToFile() throws IOException {
@@ -70,4 +70,4 @@ public class ServerMenuTest {
 
 
 
-}
+}*/

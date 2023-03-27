@@ -61,13 +61,13 @@ public class ClientWorkerTest {
 
 
         // Invoke the method to be tested
-        clientWorker.disconnectClient(clientWorkers,id, messageQueue,socket, out, in);
+        clientWorker.disconnectClient();
         sleep(1000);
         // Check the results
-        Assertions.assertEquals(0, clientWorkers.size(), "The list of client workers should be empty");
-        Assertions.assertEquals("Client 1 has left the chat\n", outputStream.toString(), "The message sent to the other clients is incorrect");
-        Assertions.assertTrue(messageQueue.contains("DISCONNECTED Client 1"), "The log entry for disconnecting the client is missing");
-        Assertions.assertThrows(IOException.class, in::readUTF, "The input stream should have been closed");
+        assertEquals(0, clientWorkers.size(), "The list of client workers should be empty");
+        assertEquals("Client 1 has left the chat\n", outputStream.toString(), "The message sent to the other clients is incorrect");
+        assertTrue(messageQueue.contains("DISCONNECTED Client 1"), "The log entry for disconnecting the client is missing");
+        assertThrows(IOException.class, in::readUTF, "The input stream should have been closed");
         assertThrows(IOException.class, out::flush, "The output stream should have been closed");
         //assertThrows(IOException.class, socket::close, "The socket should have been closed");
     }
