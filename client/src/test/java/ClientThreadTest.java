@@ -1,13 +1,10 @@
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Before;
-import org.junit.After;
 import org.junit.jupiter.api.*;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
 
 public class ClientThreadTest {
     private ServerSocket serverSocket;

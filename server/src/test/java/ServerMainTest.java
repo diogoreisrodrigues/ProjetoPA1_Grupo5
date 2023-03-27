@@ -1,19 +1,22 @@
-import static org.junit.Assert.*;
+
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 
 public class ServerMainTest {
     private ServerThread server;
     private Thread serverThread;
 
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         server = new ServerThread(8888);
         serverThread = new Thread(server);

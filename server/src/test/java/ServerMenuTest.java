@@ -1,4 +1,3 @@
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -68,29 +67,6 @@ public class ServerMenuTest {
 
     }
 
-    @Test
-    public void testRemoveWordsfromFile() throws IOException {
-
-    }
-
-    @Test
-    void testAddWordsToMenu() {
-        /*
-        //1º Adicionar nova palavra
-        String input = "testWord";
-        InputStream in = new ByteArrayInputStream(input.getBytes());
-        System.setIn(in);
-        sm.addWordToFile("testFile.txt",input);
-        assertTrue(sm.wordInFile("testFile.txt", input));
-
-        //2ºPalavra ja existente no ficheiro
-        input="hello";
-        sm.addWordToFile("testFile.txt",input);
-        sm.addWordsToMenu("testFile.txt");
-        assertTrue(sm.wordInFile("testFile.txt", input));
-        */
-
-    }
 
 
 }
