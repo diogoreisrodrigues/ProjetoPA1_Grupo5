@@ -36,11 +36,8 @@ public class ClientThread extends Thread {
      * Sends the data to the Client and waits for the messages
      */
     public void run ( ) {
-        //try {
         waitMessage();
         try {
-            // if(sem.tryAcquire(1, TimeUnit.SECONDS)) {
-            System.out.println ( "Sending Data" );
             Scanner scanner = new Scanner(System.in);
             while ( socket.isConnected() ) {
 

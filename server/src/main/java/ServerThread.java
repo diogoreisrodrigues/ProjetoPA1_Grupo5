@@ -98,6 +98,8 @@ public class ServerThread extends Thread {
                     if (!semaphore.tryAcquire()) {
                         queueLogLock.lock();
                         queueToLog.add("WAITING - CLIENT " + id);
+                        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                        out.println ( "Está em espera. Aguarde a sua vez para entrar no servidor :)" );
                         queueLogLock.unlock();
                         semaphore.acquire();
                     }

@@ -46,7 +46,8 @@ public class ClientWorker extends Thread{
             this.id = id;
             ClientWorkers.add(this);
             this.queueToLog=messageQueue;
-            sendMessage("The Client "+ id +" has connected to the chat", ClientWorkers);
+            sendMessage("O Utilizador "+ id +" conectou-se ao chat. Divirtam-se!", ClientWorkers);
+            out.println("Entrou no chat :D Fale com respeito! Cuidado com as palavras feias ;D");
             this.filterLock = new Semaphore(0);
             this.buffer = buffer;
             this.filteredBuffer = filteredBuffer;

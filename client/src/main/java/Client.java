@@ -16,7 +16,7 @@ public class Client {
      */
     public static void main ( String[] args ) throws IOException {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Choose your username to enter the chat: ");
+        System.out.println("Escolha o seu nome de utilizador: ");
         String username = scanner.nextLine();
         Socket socket = new Socket("localhost", 8888);
         ClientThread client = new ClientThread ( socket, username );
