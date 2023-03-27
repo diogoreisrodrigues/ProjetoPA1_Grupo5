@@ -56,7 +56,7 @@ public class ClientWorkerTest {
 
         ReentrantLock lockLogger = new ReentrantLock();
         Semaphore semaphore = new Semaphore(1);
-        ClientWorker clientWorker = new ClientWorker(socket, logger, id, lockLog, buffer, filteredBuffer, bufferLock, filteredBufferLock, messageQueue, semaphore);
+        ClientWorker clientWorker = new ClientWorker(socket,  id, buffer, filteredBuffer, bufferLock, filteredBufferLock, messageQueue, semaphore);
         clientWorkers.add(clientWorker);
         messageQueue.add("DISCONNECTED Client 1");
 

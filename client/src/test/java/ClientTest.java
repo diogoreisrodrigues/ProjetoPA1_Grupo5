@@ -39,7 +39,7 @@ public class ClientTest {
         clientThread = new ClientThread(socket, "UtilizadorTeste");
 
         // Set the BufferedReader on the ClientThread
-        clientThread.in = reader;
+        clientThread.setIn(reader);
     }
 
     @After
@@ -66,6 +66,6 @@ public class ClientTest {
         }
 
         // Verify that the message was received by the waitMessage() method
-        assertEquals("mensagem de teste", clientThread.in.readLine());
+        assertEquals("mensagem de teste", clientThread.getIn().readLine());
     }
 }
