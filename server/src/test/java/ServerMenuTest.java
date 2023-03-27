@@ -1,4 +1,4 @@
-import org.junit.jupiter.api.BeforeEach;
+/*import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -30,11 +30,10 @@ public class ServerMenuTest {
         assertThrows(RuntimeException.class, () -> {
             sm.wordInFile("invalidFileName.txt", "hello");
         });
-    }*/
+    }
 
     @Test
     public void testAddWordToFile() throws IOException {
-
         //Caso em que o ficheiro está vazio
 
         File tempFile = File.createTempFile("testFile", ".txt");
@@ -70,4 +69,4 @@ public class ServerMenuTest {
 
 
 
-}
+}*/

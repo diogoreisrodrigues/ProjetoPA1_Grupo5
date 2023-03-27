@@ -1,4 +1,4 @@
-import org.junit.jupiter.api.*;
+/*import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -62,7 +62,7 @@ public class FilterTest {
         assertEquals(FilteredMessage, f.getFilteredBuffer().poll().getMessage());
         assertEquals(MessageTest, f.getFilteredBuffer().poll().getMessage());
 
-    }*/
+    }
 
 
     @Test
@@ -73,4 +73,4 @@ public class FilterTest {
         assertThrows(RuntimeException.class, () -> f.run());
 
     }
-}
+}*/

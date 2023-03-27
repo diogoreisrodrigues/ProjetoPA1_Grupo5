@@ -6,6 +6,7 @@ public class Message {
     private final int clientWorkerId;
     private String Message;
 
+
     /**
      * This is the constructor for the Message object.
      *
